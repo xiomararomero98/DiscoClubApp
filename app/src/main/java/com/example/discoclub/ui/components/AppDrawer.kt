@@ -1,5 +1,9 @@
 package com.example.discoclub.ui.components
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.NavigationDrawerItem
@@ -39,3 +43,16 @@ fun AppDrawer(
         }
     }
 }
+
+//Helper para construir la lista estándar de ítems del drawer
+
+@Composable
+fun defaultDrawerItems(
+    onHome: () -> Unit, //acción home
+    onLogin: () -> Unit, //acción login
+    onRegister: () -> Unit //accion registro
+): List<DrawerItem> = listOf(
+    DrawerItem("Home", Icons.Filled.Home, onHome), //item home
+    DrawerItem("Login", Icons.Filled.AccountCircle, onLogin), //item login
+    DrawerItem("Registro", Icons.Filled.Person, onRegister) //item registros
+)

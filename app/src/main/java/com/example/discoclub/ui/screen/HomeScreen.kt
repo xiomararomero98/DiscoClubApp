@@ -15,3 +15,4 @@ private fun createTempFile(context: Context): File{
     }
     return File(storageDir, "IMG_${timeStamp}.jpg")
 }
+
