@@ -1,76 +1,81 @@
 package com.example.discoclub.data.local.database
 
-import android.content.Context
-import androidx.room.Database
-import androidx.room.Room
-import androidx.room.RoomDatabase
-import androidx.sqlite.db.SupportSQLiteDatabase
-import com.example.discoclub.data.local.user.UserDao
-import com.example.discoclub.data.local.user.UserEntity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import okhttp3.Dispatcher
 
+import android.content.Context                                  // Contexto para construir DB
+import androidx.room.Database                                   // Anotación @Database
+import androidx.room.Room                                       // Builder de DB
+import androidx.room.RoomDatabase                               // Clase base de DB
+import androidx.sqlite.db.SupportSQLiteDatabase                 // Tipo del callback onCreate
+import com.example.discoclub.data.local.user.UserDao         // Import del DAO de usuario
+import com.example.discoclub.data.local.user.UserEntity      // Import de la entidad de usuario
+import kotlinx.coroutines.CoroutineScope                        // Para corrutinas en callback
+import kotlinx.coroutines.Dispatchers                           // Dispatcher IO
+import kotlinx.coroutines.launch                                // Lanzar corrutina
+
+// @Database registra entidades y versión del esquema.
+// version = 1: como es primera inclusión con teléfono, partimos en 1.
 @Database(
     entities = [UserEntity::class],
     version = 1,
-    exportSchema =  true
+    exportSchema = true // Mantener true para inspección de esquema (útil en educación)
 )
-abstract class AppDatabase : RoomDatabase(){
-    //exponemos el DAO de usuarios
+abstract class AppDatabase : RoomDatabase() {
 
+    // Exponemos el DAO de usuarios
     abstract fun userDao(): UserDao
 
-    companion object{
+    companion object {
         @Volatile
-        private var INSTANCE : AppDatabase? = null //instancia singleton
-        private const val DB_NAME = "DiscoClub.db"
-        //obtiene la instancia unica de la base
-        fun getInstance(context: Context): AppDatabase{
-            return INSTANCE ?: synchronized(this){
-                //Construimos la DB con callback de precarga
-                val  instance = Room.databaseBuilder(
+        private var INSTANCE: AppDatabase? = null              // Instancia singleton
+        private const val DB_NAME = "ui_navegacion.db"         // Nombre del archivo .db
+
+        // Obtiene la instancia única de la base
+        fun getInstance(context: Context): AppDatabase {
+            return INSTANCE ?: synchronized(this) {
+                // Construimos la DB con callback de precarga
+                val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
                     DB_NAME
                 )
-                 //callback para ejecutar cuando la DB se crea por primera vez
-                    .addCallback(object : RoomDatabase.Callback(){
+                    // Callback para ejecutar cuando la DB se crea por primera vez
+                    .addCallback(object : RoomDatabase.Callback() {
                         override fun onCreate(db: SupportSQLiteDatabase) {
                             super.onCreate(db)
-                            //lanzamos una corrutina en IO para insertar datos iniciales
+                            // Lanzamos una corrutina en IO para insertar datos iniciales
                             CoroutineScope(Dispatchers.IO).launch {
                                 val dao = getInstance(context).userDao()
 
-                                //precarga de usuarios (incluye el telefono)
-                                //reemplaza aqui por los mismos datos que usas en login/registro
+                                // Precarga de usuarios (incluye teléfono)
+                                // Reemplaza aquí por los mismitos datos que usas en Login/Register.
                                 val seed = listOf(
                                     UserEntity(
                                         name = "Admin",
                                         email = "admin@duoc.cl",
-                                        phone = "+56928683281",
+                                        phone = "+56911111111",
                                         password = "Admin123!"
                                     ),
                                     UserEntity(
-                                        name = "Xiomara Romero",
-                                        email = "xiomara@duoc.cl",
+                                        name = "Víctor Rosendo",
+                                        email = "victor@duoc.cl",
                                         phone = "+56922222222",
                                         password = "123456"
                                     )
                                 )
 
-                                //inserta seed solo si la tabla esta vacia
-                                if (dao.count() == 0){
+                                // Inserta seed sólo si la tabla está vacía
+                                if (dao.count() == 0) {
                                     seed.forEach { dao.insert(it) }
                                 }
                             }
                         }
                     })
+                    // En entorno educativo, si cambias versión sin migraciones, destruye y recrea.
                     .fallbackToDestructiveMigration()
                     .build()
-                INSTANCE = instance
-                instance
+
+                INSTANCE = instance                             // Guarda la instancia
+                instance                                        // Devuelve la instancia
             }
         }
     }

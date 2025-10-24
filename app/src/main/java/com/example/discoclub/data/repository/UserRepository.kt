@@ -1,35 +1,37 @@
 package com.example.discoclub.data.repository
 
-import com.example.discoclub.data.local.user.UserDao
-import com.example.discoclub.data.local.user.UserEntity
+import com.example.discoclub.data.local.user.UserDao       // DAO de usuario
+import com.example.discoclub.data.local.user.UserEntity    // Entidad de usuario
 
-class UserRepository (
-    private val userDao: UserDao //inyeccion del DAO
-){
-    //login: busca por email y valida contraseña
-    suspend fun login(email: String, password: String): Result<UserEntity>{
-        val user = userDao.getByEmail(email)
-        return if (user != null && user.password == password){
-            Result.success(user)
-        }else{
-            Result.failure(IllegalArgumentException("Credenciales inválidas"))
+// Repositorio: orquesta reglas de negocio para login/registro sobre el DAO.
+class UserRepository(
+    private val userDao: UserDao // Inyección del DAO
+) {
+
+    // Login: busca por email y valida contraseña
+    suspend fun login(email: String, password: String): Result<UserEntity> {
+        val user = userDao.getByEmail(email)                         // Busca usuario
+        return if (user != null && user.password == password) {      // Verifica pass
+            Result.success(user)                                     // Éxito
+        } else {
+            Result.failure(IllegalArgumentException("Credenciales inválidas")) // Error
         }
     }
-    //Registro:valida no duplicado y crea nuevo usuario (con telefono)
 
-    suspend fun register(name: String, email: String, phone: String, password: String) : Result<Long>{
-        val exists = userDao.getByEmail(email) !=null
-        if (exists){
+    // Registro: valida no duplicado y crea nuevo usuario (con teléfono)
+    suspend fun register(name: String, email: String, phone: String, password: String): Result<Long> {
+        val exists = userDao.getByEmail(email) != null               // ¿Correo ya usado?
+        if (exists) {
             return Result.failure(IllegalStateException("El correo ya está registrado"))
         }
-        val id = userDao.insert(
+        val id = userDao.insert(                                     // Inserta nuevo
             UserEntity(
                 name = name,
-                email =email,
-                phone = phone,
+                email = email,
+                phone = phone,                                       // Teléfono incluido
                 password = password
             )
         )
-        return Result.success(id)
+        return Result.success(id)                                    // Devuelve ID generado
     }
 }
