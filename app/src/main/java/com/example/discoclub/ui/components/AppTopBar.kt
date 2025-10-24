@@ -37,7 +37,7 @@ fun AppTopBar(
         ),
         title = { // Slot del título
             Text(
-                text = "Demo Navegación Compose", // Título visible
+                text = "DiscoClub", // Título visible
                 style = MaterialTheme.typography.titleLarge, // Estilo grande
                 maxLines = 1,              // asegura una sola línea Int.MAX_VALUE   // permite varias líneas
                 overflow = TextOverflow.Ellipsis // agrega "..." si no cabe
@@ -50,18 +50,6 @@ fun AppTopBar(
             }
         },
         actions = { // Acciones a la derecha (íconos + overflow)
-            IconButton(onClick = onHome) { // Ir a Home
-                Icon(Icons.Filled.Home, contentDescription = "Home") // Ícono Home
-            }
-            IconButton(onClick = onLogin) { // Ir a Login
-                Icon(Icons.Filled.AccountCircle, contentDescription = "Login") // Ícono Login
-            }
-            IconButton(onClick = onRegister) { // Ir a Registro
-                Icon(Icons.Filled.Person, contentDescription = "Registro") // Ícono Registro
-            }
-            IconButton(onClick = { showMenu = true }) { // Abre menú overflow
-                Icon(Icons.Filled.MoreVert, contentDescription = "Más") // Ícono 3 puntitos
-            }
             DropdownMenu(
                 expanded = showMenu, // Si está abierto
                 onDismissRequest = { showMenu = false } // Cierra al tocar fuera

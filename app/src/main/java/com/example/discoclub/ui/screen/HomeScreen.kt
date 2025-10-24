@@ -112,10 +112,6 @@ fun HomeScreen(
                 )
 
                 Spacer(Modifier.width(8.dp)) //separacion horizontal
-                AssistChip(
-                    onClick = {}, //sin accion (demo)
-                    label = {Text("Navega desde arriba o aquí") } //texto chip
-                )
             }
 
             Spacer(Modifier.height(20.dp)) //separacion
