@@ -163,12 +163,12 @@ class AuthViewModel (
             )
 
             // Interpreta resultado y actualiza estado
-            _register.update {
-                if (result.isSuccess) {
+            _register.update {   //cambia el estado del formulario ,actualizando los valores por pantalla
+                if (result.isSuccess) {     //ve si el registro fue exitoso ,decidiendo que mensaje poner
                     it.copy(isSubmitting = false, success = true, errorMsg = null)  // OK
                 } else {
-                    it.copy(isSubmitting = false, success = false,
-                        errorMsg = result.exceptionOrNull()?.message ?: "No se pudo registrar")
+                    it.copy(isSubmitting = false, success = false,    //crea una nueva version del estado ,actualiza la ui
+                        errorMsg = result.exceptionOrNull()?.message ?: "No se pudo registrar")     //muestra mensaje de error si falla el registro
                 }
             }
         }
@@ -179,7 +179,7 @@ class AuthViewModel (
     }
 
     // ---------------------------------------------------------
-    // NUEVA SECCIÓN: PERFIL DE USUARIO
+    //  PERFIL DE USUARIO
     // ---------------------------------------------------------
 
     data class ProfileState(
