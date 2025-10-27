@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons // Íconos Material
 import androidx.compose.material.icons.filled.Home // Ícono Home
 import androidx.compose.material.icons.filled.AccountCircle // Ícono Login
 import androidx.compose.material.icons.filled.Person // Ícono Registro
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon // Ícono en ítem del drawer
 import androidx.compose.material3.NavigationDrawerItem // Ítem seleccionable
 import androidx.compose.material3.NavigationDrawerItemDefaults // Defaults de estilo
@@ -13,6 +14,8 @@ import androidx.compose.material3.ModalDrawerSheet // Contenedor de contenido de
 import androidx.compose.runtime.Composable // Marcador composable
 import androidx.compose.ui.Modifier // Modificador
 import androidx.compose.ui.graphics.vector.ImageVector // Tipo de ícono
+import com.example.discoclub.ui.components.DrawerItem
+
 // Pequeña data class para representar cada opción del drawer
 data class DrawerItem( // Estructura de un ítem de menú lateral
     val label: String, // Texto a mostrar
@@ -48,9 +51,11 @@ fun AppDrawer(
 fun defaultDrawerItems(
     onHome: () -> Unit,   // Acción Home
     onLogin: () -> Unit,  // Acción Login
-    onRegister: () -> Unit // Acción Registro
+    onRegister: () -> Unit, // Acción Registro
+    onAdmin: () -> Unit   // Acción Admin
 ): List<DrawerItem> = listOf(
     DrawerItem("Home", Icons.Filled.Home, onHome),          // Ítem Home
     DrawerItem("Login", Icons.Filled.AccountCircle, onLogin),       // Ítem Login
-    DrawerItem("Registro", Icons.Filled.Person, onRegister) // Ítem Registro
+    DrawerItem("Registro", Icons.Filled.Person, onRegister),// Ítem Registro
+    DrawerItem("Admin", Icons.Filled.Settings, onAdmin) // Ítem Admin
 )

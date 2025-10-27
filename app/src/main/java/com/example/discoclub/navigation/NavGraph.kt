@@ -15,13 +15,20 @@ import androidx.compose.material3.DrawerValue // Valores (Opened/Closed)
 import androidx.compose.runtime.rememberCoroutineScope // Alcance de corrutina
 
 
+
 import com.example.discoclub.ui.components.AppTopBar // Barra superior
 import com.example.discoclub.ui.components.AppDrawer // Drawer composable
 import com.example.discoclub.ui.components.defaultDrawerItems // Ítems por defecto
 import com.example.discoclub.ui.screen.HomeScreen // Pantalla Home
 import com.example.discoclub.ui.screen.LoginScreenVm // Pantalla Login
+import com.example.discoclub.ui.screen.PerfilScreenVm
 import com.example.discoclub.ui.screen.RegisterScreenVm // Pantalla Registro
+import com.example.discoclub.ui.screen.SplashScreen // Pantalla Splash
+import com.example.discoclub.ui.screen.AdminScreen
+import com.example.discoclub.ui.screen.PerfilScreen
 import com.example.discoclub.ui.viewmodel.AuthViewModel
+
+
 
 @Composable // Gráfico de navegación + Drawer + Scaffold
 fun AppNavGraph(navController: NavHostController,
@@ -35,6 +42,7 @@ fun AppNavGraph(navController: NavHostController,
     val goHome: () -> Unit    = { navController.navigate(Route.Home.path) }    // Ir a Home
     val goLogin: () -> Unit   = { navController.navigate(Route.Login.path) }   // Ir a Login
     val goRegister: () -> Unit = { navController.navigate(Route.Register.path) } // Ir a Registro
+    val goAdmin: () -> Unit = { navController.navigate(Route.Admin.path) } // Ir a Admin
 
     ModalNavigationDrawer( // Capa superior con drawer lateral
         drawerState = drawerState, // Estado del drawer
@@ -53,6 +61,10 @@ fun AppNavGraph(navController: NavHostController,
                     onRegister = {
                         scope.launch { drawerState.close() } // Cierra drawer
                         goRegister() // Navega a Registro
+                    },
+                    onAdmin = {
+                        scope.launch { drawerState.close() } // Cierra drawer
+                        navController.navigate(Route.Admin.path) // Navega a Admin
                     }
                 )
             )
@@ -70,9 +82,12 @@ fun AppNavGraph(navController: NavHostController,
         ) { innerPadding -> // Padding que evita solapar contenido
             NavHost( // Contenedor de destinos navegables
                 navController = navController, // Controlador
-                startDestination = Route.Home.path, // Inicio: Home
+                startDestination = Route.Splash.path, // Inicio: Home
                 modifier = Modifier.padding(innerPadding) // Respeta topBar
             ) {
+                composable(Route.Splash.path) { // destino splash
+                    SplashScreen()
+                }
                 composable(Route.Home.path) { // Destino Home
                     HomeScreen(
                         onGoLogin = goLogin,     // Botón para ir a Login
@@ -95,6 +110,29 @@ fun AppNavGraph(navController: NavHostController,
                         vm = authViewModel,            // <-- NUEVO: pasamos VM inyectado
                         onRegisteredNavigateLogin = goLogin,       // Si el VM marca success=true, volvemos a Login
                         onGoLogin = goLogin                        // Botón alternativo para ir a Login
+                    )
+                }
+                composable(Route.Admin.path) {
+                    com.example.discoclub.ui.screen.AdminScreen(
+
+                        navController = navController,
+                        vm = authViewModel   // se pasa el ViewModel al AdminScreen
+                    )
+                }
+                // edición de perfil
+                // ------------------------------------------------------------
+                composable(
+                    route = "perfil/{userId}",  // 👈 acepta un parámetro dinámico (userId)
+                ) { backStackEntry ->
+
+                    // Extrae el ID del usuario desde la ruta
+                    val userId = backStackEntry.arguments?.getString("userId")?.toIntOrNull() ?: 0
+
+                    // Muestra la pantalla de perfil con ese ID
+                    PerfilScreenVm(
+                        vm = authViewModel,  // tu ViewModel de autenticación o usuarios
+                        onPerfilGuardado = { navController.popBackStack() },
+                        onCancelarClick = { navController.popBackStack() }
                     )
                 }
             }
