@@ -25,5 +25,5 @@ interface UserDao {
 
     // Lista completa (útil para debug/administración).
     @Query("SELECT * FROM users ORDER BY id ASC")
-    suspend fun getAllUsers(): Flow<List<UserEntity>>
+    fun getAllUsers(): Flow<List<UserEntity>>
 }
