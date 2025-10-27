@@ -2,6 +2,7 @@ package com.example.discoclub.data.repository
 
 import com.example.discoclub.data.local.user.UserDao       // DAO de usuario
 import com.example.discoclub.data.local.user.UserEntity    // Entidad de usuario
+import kotlinx.coroutines.flow.Flow
 
 // Repositorio: orquesta reglas de negocio para login/registro sobre el DAO.
 class UserRepository(
@@ -34,4 +35,7 @@ class UserRepository(
         )
         return Result.success(id)                                    // Devuelve ID generado
     }
+
+    // ✅ Obtener todos los usuarios registrados (para AdminPerfilesScreen)
+    fun getAllUsers(): Flow<List<UserEntity>> = userDao.getAllUsers()
 }

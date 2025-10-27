@@ -6,7 +6,7 @@ import com.example.discoclub.data.local.carrito.CarritoEntity
 import kotlinx.coroutines.flow.Flow
 
 // Repositorio del carrito: suma/resta y totales en CLP.
-class CarritoRepository(
+class CartRepository(
     private val carritoDao: CarritoDao
 ) {
     fun observeCart(): Flow<List<CarritoEntity>> = carritoDao.observeCart()

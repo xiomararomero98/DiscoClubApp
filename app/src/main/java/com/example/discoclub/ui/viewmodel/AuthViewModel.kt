@@ -163,12 +163,12 @@ class AuthViewModel (
             )
 
             // Interpreta resultado y actualiza estado
-            _register.update {
-                if (result.isSuccess) {
+            _register.update {   //cambia el estado del formulario ,actualizando los valores por pantalla
+                if (result.isSuccess) {     //ve si el registro fue exitoso ,decidiendo que mensaje poner
                     it.copy(isSubmitting = false, success = true, errorMsg = null)  // OK
                 } else {
-                    it.copy(isSubmitting = false, success = false,
-                        errorMsg = result.exceptionOrNull()?.message ?: "No se pudo registrar")
+                    it.copy(isSubmitting = false, success = false,    //crea una nueva version del estado ,actualiza la ui
+                        errorMsg = result.exceptionOrNull()?.message ?: "No se pudo registrar")     //muestra mensaje de error si falla el registro
                 }
             }
         }
@@ -177,4 +177,36 @@ class AuthViewModel (
     fun clearRegisterResult() {                             // Limpia banderas tras navegar
         _register.update { it.copy(success = false, errorMsg = null) }
     }
+
+    // ---------------------------------------------------------
+    //  PERFIL DE USUARIO
+    // ---------------------------------------------------------
+
+    data class ProfileState(
+        val name: String = "",
+        val email: String = "",
+        val phone: String = "",
+        val role: String = "",
+        val success: Boolean = false
+    )
+
+    private val _profile = MutableStateFlow(ProfileState())
+    val profile: StateFlow<ProfileState> = _profile
+
+    fun submitProfileUpdate() {
+        viewModelScope.launch {
+            delay(1000) // simula guardado
+            _profile.update { it.copy(success = true) }
+        }
+    }
+
+    fun clearProfileResult() {
+        _profile.update { it.copy(success = false) }
+    }
+
+    // ---------------------------------------------------------
+    //  Obtener todos los usuarios (para mostrar en Admin → Perfiles)
+    // ---------------------------------------------------------
+    fun getAllUsers() = repository.getAllUsers()
+
 }

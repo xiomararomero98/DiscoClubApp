@@ -5,6 +5,7 @@ import androidx.room.Dao                       // Marca esta interfaz como DAO d
 import androidx.room.Insert                    // Para insertar filas
 import androidx.room.OnConflictStrategy        // Estrategia de conflicto en inserción
 import androidx.room.Query                     // Para queries SQL
+import kotlinx.coroutines.flow.Flow
 
 // @Dao indica que define operaciones para la tabla users.
 @Dao
@@ -24,5 +25,5 @@ interface UserDao {
 
     // Lista completa (útil para debug/administración).
     @Query("SELECT * FROM users ORDER BY id ASC")
-    suspend fun getAll(): List<UserEntity>
+    fun getAllUsers(): Flow<List<UserEntity>>
 }
