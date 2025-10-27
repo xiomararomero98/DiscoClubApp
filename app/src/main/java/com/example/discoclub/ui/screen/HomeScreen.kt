@@ -92,10 +92,10 @@ fun HomeScreen(
     val bg = MaterialTheme.colorScheme.surfaceVariant // fondo agradable para home
 
     Box( //contenedor a pantalla completa
-       modifier = Modifier
-           .fillMaxSize() //ocupa todo
-           .background(bg) //aplica fondo
-           .padding(16.dp), //margen interior
+        modifier = Modifier
+            .fillMaxSize() //ocupa todo
+            .background(bg) //aplica fondo
+            .padding(16.dp), //margen interior
         contentAlignment = Alignment.Center //centra el contenido
     ){
         Column(
