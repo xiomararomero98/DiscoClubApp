@@ -177,4 +177,36 @@ class AuthViewModel (
     fun clearRegisterResult() {                             // Limpia banderas tras navegar
         _register.update { it.copy(success = false, errorMsg = null) }
     }
+
+    // ---------------------------------------------------------
+    // NUEVA SECCIÓN: PERFIL DE USUARIO
+    // ---------------------------------------------------------
+
+    data class ProfileState(
+        val name: String = "",
+        val email: String = "",
+        val phone: String = "",
+        val role: String = "",
+        val success: Boolean = false
+    )
+
+    private val _profile = MutableStateFlow(ProfileState())
+    val profile: StateFlow<ProfileState> = _profile
+
+    fun submitProfileUpdate() {
+        viewModelScope.launch {
+            delay(1000) // simula guardado
+            _profile.update { it.copy(success = true) }
+        }
+    }
+
+    fun clearProfileResult() {
+        _profile.update { it.copy(success = false) }
+    }
+
+    // ---------------------------------------------------------
+    //  Obtener todos los usuarios (para mostrar en Admin → Perfiles)
+    // ---------------------------------------------------------
+    fun getAllUsers() = repository.getAllUsers()
+
 }
