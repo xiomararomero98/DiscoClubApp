@@ -69,9 +69,9 @@ fun PerfilScreen(
     var telefono by remember (user?.id) { mutableStateOf(user?.phone ?: "") }
     var rol by remember (user?.id) { mutableStateOf(user?.role ?: "") }
 
-    var correoError by remember (user?.id) { mutableStateOf<String?>(null) }
-    var telefonoError by remember (user?.id) { mutableStateOf<String?>(null) }
-    var rolError by remember (user?.id) { mutableStateOf<String?>(null) }
+    var correoError by remember { mutableStateOf<String?>(null) }
+    var telefonoError by remember  { mutableStateOf<String?>(null) }
+    var rolError by remember  { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
