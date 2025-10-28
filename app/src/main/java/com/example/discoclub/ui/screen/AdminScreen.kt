@@ -95,9 +95,7 @@ fun AdminScreen(
     }
 }
 
-// ------------------------------------------------------------
-// SUBPANTALLA 1: INVENTARIO (CRUD DE PRODUCTOS)
-// ------------------------------------------------------------
+// INVENTARIO (CRUD DE PRODUCTOS)
 
 @Composable
 fun AdminInventarioScreen() {
