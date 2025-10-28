@@ -9,7 +9,7 @@ sealed class Route(val path: String) { // Cada objeto representa una pantalla
     data object Register : Route("register") // Ruta Registro
 
     data object Admin    : Route("admin")    // Ruta Admin
-
+    data object Pedido: Route("pedido")
 
 }
 

@@ -43,6 +43,7 @@ fun AppNavGraph(navController: NavHostController,
     val goLogin: () -> Unit   = { navController.navigate(Route.Login.path) }   // Ir a Login
     val goRegister: () -> Unit = { navController.navigate(Route.Register.path) } // Ir a Registro
     val goAdmin: () -> Unit = { navController.navigate(Route.Admin.path) } // Ir a Admin
+    val goPedido: () -> Unit = {navController.navigate(Route.Pedido.path)}
 
     ModalNavigationDrawer( // Capa superior con drawer lateral
         drawerState = drawerState, // Estado del drawer
@@ -64,7 +65,11 @@ fun AppNavGraph(navController: NavHostController,
                     },
                     onAdmin = {
                         scope.launch { drawerState.close() } // Cierra drawer
-                        navController.navigate(Route.Admin.path) // Navega a Admin
+                        goAdmin() // Navega a Admin
+                    },
+                    onPedido = {
+                        scope.launch { drawerState.close() }
+                        goPedido()
                     }
                 )
             )
@@ -76,7 +81,8 @@ fun AppNavGraph(navController: NavHostController,
                     onOpenDrawer = { scope.launch { drawerState.open() } }, // Abre drawer
                     onHome = goHome,     // Botón Home
                     onLogin = goLogin,   // Botón Login
-                    onRegister = goRegister // Botón Registro
+                    onRegister = goRegister, // Botón Registro
+                    onPedido = goPedido
                 )
             }
         ) { innerPadding -> // Padding que evita solapar contenido
