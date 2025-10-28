@@ -25,7 +25,8 @@ fun AppTopBar(
     onOpenDrawer: () -> Unit, // Abre el drawer (hamburguesa)
     onHome: () -> Unit,       // Navega a Home
     onLogin: () -> Unit,      // Navega a Login
-    onRegister: () -> Unit    // Navega a Registro
+    onRegister: () -> Unit,    // Navega a Registro
+    onPedido: () -> Unit
 ) {
     //lo que hace es crear una variable de estado recordada que le dice a la interfaz
     // si el menú desplegable de 3 puntitos debe estar visible (true) o oculto (false).
