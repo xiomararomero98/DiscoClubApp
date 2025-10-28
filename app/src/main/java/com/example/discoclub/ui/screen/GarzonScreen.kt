@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -21,15 +22,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.discoclub.ui.viewmodel.PedidosViewModel
-import androidx.compose.foundation.lazy.items
+import com.example.discoclub.data.local.pedido.PedidoEntity
 
 @Composable
-fun GarzonScreen(viewModel: PedidosViewModel, mesaId: Long){
+fun GarzonScreen(viewModel: PedidosViewModel){
     val pedidos by viewModel.pedidosMesa.collectAsState(initial = emptyList())
     var producto by remember { mutableStateOf("") }
     var cantidad by remember { mutableStateOf(1) }
+    var mesaId by remember { mutableStateOf(1L) }
 
-    LaunchedEffect(mesaId) {
+    LaunchedEffect(Unit) {
         viewModel.loadPedidosMesa(mesaId)
     }
 
@@ -64,7 +66,7 @@ fun GarzonScreen(viewModel: PedidosViewModel, mesaId: Long){
         }
         Spacer(modifier = Modifier.height(16.dp))
         LazyColumn(modifier = Modifier.fillMaxHeight()){
-            items(pedidos) {pedido ->
+            items(pedidos) {pedido: PedidoEntity ->
                 Text("Producto: ${pedido.idProducto} x ${pedido.cantidad}")
             }
         }

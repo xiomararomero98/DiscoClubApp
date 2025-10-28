@@ -22,6 +22,8 @@ import com.example.discoclub.ui.components.AppDrawer // Drawer composable
 import com.example.discoclub.ui.components.defaultDrawerItems // Ítems por defecto
 import com.example.discoclub.ui.screen.* // Home/Login/Register/Products/Cart/Profile
 import com.example.discoclub.ui.viewmodel.AuthViewModel
+
+// NUEVO: DB/Repos/VM de cliente
 import com.example.discoclub.data.local.database.AppDatabase
 import com.example.discoclub.data.repository.ProductosRepository
 import com.example.discoclub.data.repository.CarritoRepository
@@ -30,6 +32,7 @@ import com.example.discoclub.ui.viewmodel.CartViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.discoclub.ui.viewmodel.PedidosViewModel
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 
@@ -37,7 +40,8 @@ import androidx.navigation.navArgument
 @Composable // Gráfico de navegación + Drawer + Scaffold + BottomBar (solo client/*)
 fun AppNavGraph(
     navController: NavHostController,
-    authViewModel: AuthViewModel        // VM inyectado desde MainActivity (como ya tenías)
+    authViewModel: AuthViewModel,
+    pedidosViewModel: PedidosViewModel
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -174,6 +178,9 @@ fun AppNavGraph(
                         onRegisteredNavigateLogin = goLogin,
                         onGoLogin = goLogin
                     )
+                }
+                composable(Route.Pedido.path){
+                    GarzonScreen(viewModel = pedidosViewModel)
                 }
                 composable(Route.Products.path) {
                     ProductsScreen(

@@ -24,12 +24,12 @@ interface PedidoDao{
     @Query("SELECT * FROM Pedido")
     fun getAll(): Flow<List<PedidoEntity>>
 
-    @Query("DELETE FROM Pedido WHERE id = :id")
-    suspend fun deleteById(id: Long): Int
-
     @Query("DELETE FROM Pedido")
     suspend fun clear()
 
     @Query("SELECT * FROM Pedido WHERE mesaId = :mesaId")
     fun getPedidosByMesa(mesaId: Long): Flow<List<PedidoEntity>>
+
+    @Query("SELECT COUNT(*) FROM Pedido")
+    suspend fun count(): Int
 }

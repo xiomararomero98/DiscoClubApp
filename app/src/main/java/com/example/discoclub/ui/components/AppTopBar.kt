@@ -28,7 +28,6 @@ fun AppTopBar(
     onRegister: () -> Unit,    // Navega a Registro
     onAdmin: () -> Unit,
     onPedido: () -> Unit,
-    // accesos cliente (opcionales para no forzar parámetros)
     onProducts: () -> Unit = {},
     onCart: () -> Unit = {},
     onProfile: () -> Unit = {}
