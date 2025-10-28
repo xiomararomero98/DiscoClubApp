@@ -20,6 +20,8 @@ import androidx.compose.ui.graphics.Color                    // Permite aplicar 
 import androidx.compose.animation.AnimatedVisibility          // Permite animar la visibilidad de elementos (mostrar/ocultar)
 import androidx.navigation.NavHostController                 // Controlador de navegación
 import com.example.discoclub.ui.viewmodel.AuthViewModel       // ViewModel con la lógica de autenticación y perfiles
+import kotlinx.coroutines.launch
+
 
 // ------------------------------------------------------------
 // PANTALLA PRINCIPAL: PANEL DE ADMINISTRACIÓN
@@ -239,6 +241,9 @@ fun AdminPerfilesScreen(
     // Controla el usuario seleccionado para eliminar
     var userToDelete by remember { mutableStateOf<com.example.discoclub.data.local.user.UserEntity?>(null) }
 
+    // Estados para mostrar el Snackbar
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
 
     // Contenedor principal
     Column(
@@ -327,6 +332,34 @@ fun AdminPerfilesScreen(
                 }
             }
         }
+        // Muestra el mensaje de que se a eliminado el perfil con exito, con SnackBar
+        if (userToDelete != null) {
+            AlertDialog(
+                onDismissRequest = { userToDelete = null },
+                confirmButton = {
+                    TextButton(onClick = {
+                        vm.deleteUser(userToDelete!!)
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar("Perfil eliminado correctamente ✅")
+                        }
+                        userToDelete = null
+                    }) {
+                        Text("Sí, eliminar", color = Color.Red)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { userToDelete = null }) {
+                        Text("Cancelar")
+                    }
+                },
+                title = { Text("Confirmar eliminación") },
+                text = { Text("¿Estás seguro de que quieres eliminar este perfil?") }
+            )
+        }
+    }
+
+
+
         //  Diálogo de confirmación de eliminación
         if (userToDelete != null) {
             AlertDialog(
@@ -349,7 +382,7 @@ fun AdminPerfilesScreen(
             )
         }
     }
-}
+
 // ------------------------------------------------------------
 //  SUBPANTALLA 3: REGISTROS / REPORTES
 // ------------------------------------------------------------
