@@ -15,10 +15,6 @@ import androidx.compose.ui.unit.dp                          // Define medidas (d
 import com.example.discoclub.ui.viewmodel.AuthViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
-
-// ------------------------------------------------------------
-// PANTALLA CONECTADA AL VIEWMODEL (PerfilScreenVm)
-// -----------------------------------------------------------
 @Composable
 fun PerfilScreenVm(
     vm: AuthViewModel,              // Recibe una instancia del ViewModel que contiene la lógica de perfil
@@ -55,18 +51,29 @@ fun PerfilScreenVm(
     // → Se ejecuta la función onCancelarClick(), que normalmente vuelve a la pantalla anterior.
     // ---------------------------------------------------------
     PerfilScreen(
-        onGuardarClick = vm::submitProfileUpdate, // Llama la función del ViewModel cuando se hace clic en “Guardar”
-        onCancelarClick = onCancelarClick          // Llama la función recibida cuando se hace clic en “Cancelar”
+        onGuardarClick = { nombre, correo, telefono, rol ->
+            // Crea un usuario actualizado con los nuevos datos
+            val user = com.example.discoclub.data.local.user.UserEntity(
+                id = 0L, // ⚠️ luego lo cambiamos según el usuario real seleccionado
+                name = nombre,
+                email = correo,
+                phone = telefono,
+                password = "", // (no se toca aquí)
+                role = rol
+            )
+
+            vm.updateUser(user) // Llama al repositorio para guardar cambios
+        },
+        onCancelarClick = onCancelarClick
     )
+
 }
 
-// ------------------------------------------------------------
-// PANTALLA: PERFIL DE USUARIO
-// ------------------------------------------------------------
+// Perfil de usuario
 
 @Composable
 fun PerfilScreen(
-    onGuardarClick: () -> Unit = {},   // Acción opcional al presionar el botón “Guardar cambios”
+    onGuardarClick: (String, String, String, String) -> Unit = { _, _, _, _ -> },// Acción al presionar el botón “Guardar”
     onCancelarClick: () -> Unit = {}   // Acción opcional al presionar el botón “Cancelar”
 ) {
     // ---------------- ESTADOS ----------------
@@ -211,7 +218,7 @@ fun PerfilScreen(
 
                     // Si no hay errores, guarda
                     if (correoError == null && telefonoError == null && rolError == null) {
-                        onGuardarClick()
+                        onGuardarClick(nombre, correo, telefono, rol)
                     }
                 },
                 modifier = Modifier.weight(1f) // Ocupa la otra mitad de la fila
