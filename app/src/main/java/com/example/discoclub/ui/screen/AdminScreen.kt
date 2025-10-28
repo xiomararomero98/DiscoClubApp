@@ -21,6 +21,13 @@ import androidx.compose.animation.AnimatedVisibility          // Permite animar 
 import androidx.navigation.NavHostController                 // Controlador de navegación
 import com.example.discoclub.ui.viewmodel.AuthViewModel       // ViewModel con la lógica de autenticación y perfiles
 import kotlinx.coroutines.launch
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.unit.sp
 
 
 
@@ -253,18 +260,35 @@ fun AdminPerfilesScreen(
     Scaffold(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState) { data ->
-                Snackbar(
-                    modifier = Modifier.padding(12.dp),
-                    containerColor = Color(0xFF6A1B9A), // 💜 Fondo morado
-                    contentColor = Color.White,         // Texto blanco
-                    actionOnNewLine = false,
-                    shape = MaterialTheme.shapes.medium
+                //animacion para el mensaje
+
+                AnimatedVisibility(
+                    visible = true,
+                    enter = fadeIn() + slideInVertically(initialOffsetY = { it / 2 }),
+                    exit = fadeOut() + slideOutVertically(targetOffsetY = { it / 2 })
                 ) {
-                    Text(
-                        text = data.visuals.message, // mensaje del snackbar
-                        color = Color.White,
-                        fontWeight = FontWeight.SemiBold
-                    )
+                    Snackbar(
+                        modifier = Modifier
+                            .padding(horizontal = 24.dp, vertical = 8.dp)
+                            .fillMaxWidth(),
+                        containerColor = Color(0xFF6A1B9A), // 💜 Fondo morado
+                        contentColor = Color.White,
+                        shape = RoundedCornerShape(16.dp),   // esquinas suaves
+                        actionOnNewLine = false
+                    ) {
+                        // Centrado y estilo de texto
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = data.visuals.message,
+                                fontSize = 16.sp,              // 👈 Tamaño del texto
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.White
+                            )
+                        }
+                    }
                 }
             }
         }
