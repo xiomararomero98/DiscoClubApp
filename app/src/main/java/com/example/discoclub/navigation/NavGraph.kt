@@ -194,6 +194,13 @@ fun AppNavGraph(
                         onCancelarClick = { navController.popBackStack() } // vuelve atrás
                     )
                 }
+                composable(Route.Admin.path) {
+                    AdminScreen(
+                        navController = navController,
+                        vm = authViewModel // o el ViewModel que use tu AdminScreen
+                    )
+                }
+
             }
         }
     }
