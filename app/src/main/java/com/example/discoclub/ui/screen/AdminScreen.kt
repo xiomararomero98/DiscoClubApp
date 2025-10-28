@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color                    // Permite aplicar 
 import androidx.compose.animation.AnimatedVisibility          // Permite animar la visibilidad de elementos (mostrar/ocultar)
 import androidx.navigation.NavHostController                 // Controlador de navegación
 import com.example.discoclub.ui.viewmodel.AuthViewModel       // ViewModel con la lógica de autenticación y perfiles
+import kotlinx.coroutines.launch
 
 
 
@@ -250,7 +251,7 @@ fun AdminPerfilesScreen(
     val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) }//host visible para mostrar el mensaje
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }//host visible para mostrar el mensaje
     ) { paddingValues ->
         // Contenedor principal
         Column(
@@ -349,6 +350,9 @@ fun AdminPerfilesScreen(
                     confirmButton = {
                         TextButton(onClick = {
                             vm.deleteUser(userToDelete!!)
+                            coroutineScope.launch {       // lanza corrutina para mostrar mensaje
+                                snackbarHostState.showSnackbar("Perfil eliminado correctamente ✅")
+                            }
                             userToDelete = null
                         }) {
                             Text("Sí, eliminar", color = Color.Red)
