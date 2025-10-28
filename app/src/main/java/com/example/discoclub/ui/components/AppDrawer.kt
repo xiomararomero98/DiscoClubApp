@@ -4,6 +4,7 @@ package com.example.discoclub.ui.components
 import androidx.compose.material.icons.Icons // Íconos Material
 import androidx.compose.material.icons.filled.Home // Ícono Home
 import androidx.compose.material.icons.filled.AccountCircle // Ícono Login
+import androidx.compose.material.icons.filled.BorderColor
 import androidx.compose.material.icons.filled.Person // Ícono Registro
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Shop
@@ -60,11 +61,11 @@ fun defaultDrawerItems(
     onProducts: ()-> Unit,
     onProfile: () ->Unit
 ): List<DrawerItem> = listOf(
-    DrawerItem("Home", Icons.Filled.Home, onHome),          // Ítem Home
-    DrawerItem("Login", Icons.Filled.AccountCircle, onLogin),       // Ítem Login
-    DrawerItem("Registro", Icons.Filled.Person, onRegister),// Ítem Registro
-    DrawerItem("Admin", Icons.Filled.Settings, onAdmin), // Ítem Admin
+    DrawerItem("Home", Icons.Filled.Home, onHome), // Ítem Home
+    DrawerItem("Login", Icons.Filled.AccountCircle, onLogin), // Ítem Login
+    DrawerItem("Perfil", Icons.Filled.Person, onProfile), // Ítem Admin
     DrawerItem("Carrito", Icons.Filled.ShoppingCart, onCart),
     DrawerItem("Productos", Icons.Filled.Shop, onProducts),
-    DrawerItem("Perfil", Icons.Filled.Person, onProfile)
+    DrawerItem("Pedido", Icons.Filled.BorderColor, onPedido),
+    DrawerItem("Admin", Icons.Filled.Settings, onAdmin)
 )

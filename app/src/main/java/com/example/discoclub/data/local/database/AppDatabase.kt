@@ -11,6 +11,8 @@ import com.example.discoclub.data.local.productos.ProductosDao
 import com.example.discoclub.data.local.productos.ProductosEntity
 import com.example.discoclub.data.local.carrito.CarritoDao
 import com.example.discoclub.data.local.carrito.CarritoEntity
+import com.example.discoclub.data.local.pedido.PedidoDao
+import com.example.discoclub.data.local.pedido.PedidoEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,7 +30,8 @@ import kotlinx.coroutines.launch
     entities = [
         UserEntity::class,
         ProductosEntity::class,
-        CarritoEntity::class
+        CarritoEntity::class,
+        PedidoEntity::class
     ],
     version = 2, // Incrementar versión cuando cambien entidades
     exportSchema = true
@@ -39,6 +42,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun productosDao(): ProductosDao
     abstract fun carritoDao(): CarritoDao
+
+    abstract fun pedidoDao(): PedidoDao
 
     companion object {
         @Volatile
@@ -61,6 +66,7 @@ abstract class AppDatabase : RoomDatabase() {
                                 INSTANCE?.let { database ->
                                     val userDao = database.userDao()
                                     val productosDao = database.productosDao()
+                                    val pedidoDao = database.pedidoDao()
 
                                     // Precarga de usuarios
                                     if (userDao.count() == 0) {
@@ -107,6 +113,15 @@ abstract class AppDatabase : RoomDatabase() {
                                             )
                                         )
                                         productosSeed.forEach { productosDao.upsert(it) }
+                                    }
+
+                                    if (pedidoDao.count() == 0){
+                                        val pedidoSeed = PedidoEntity(
+                                                mesaId = 1,
+                                                idProducto = 2,
+                                                cantidad = 3
+                                        )
+                                        pedidoDao.insertOne(pedidoSeed)
                                     }
                                 }
                             }

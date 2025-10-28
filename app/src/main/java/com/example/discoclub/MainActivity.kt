@@ -10,10 +10,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.discoclub.data.local.database.AppDatabase
+import com.example.discoclub.data.repository.PedidoRepository
 import com.example.discoclub.data.repository.UserRepository
 import com.example.discoclub.ui.viewmodel.AuthViewModel
 import com.example.discoclub.ui.viewmodel.AuthViewModelFactory
 import com.example.discoclub.navigation.AppNavGraph
+import com.example.discoclub.ui.viewmodel.PedidosViewModel
+import com.example.discoclub.ui.viewmodel.PedidosViewModelFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,6 +59,14 @@ fun AppRoot() { // Raíz de la app para separar responsabilidades (se conserva)
     // ^ Creamos el ViewModel con factory para inyectar el repositorio.
     //   Esto reemplaza cualquier uso anterior de listas en memoria (USERS).
 
+    val pedidoDao = db.pedidoDao()
+
+    val pedidosRepository = PedidoRepository(pedidoDao)
+
+    val pedidosViewModel: PedidosViewModel = viewModel(
+        factory = PedidosViewModelFactory(pedidosRepository)
+    )
+
     // ====== TU NAVEGACIÓN ORIGINAL ======
     val navController = rememberNavController() // Controlador de navegación (igual que antes)
     MaterialTheme { // Provee colores/tipografías Material 3 (igual que antes)
@@ -66,7 +77,8 @@ fun AppRoot() { // Raíz de la app para separar responsabilidades (se conserva)
             // para que toda la app use la MISMA instancia que acabamos de inyectar.
             AppNavGraph(
                 navController = navController,
-                authViewModel = authViewModel // <-- NUEVO parámetro
+                authViewModel = authViewModel, // <-- NUEVO parámetro
+                pedidosViewModel = pedidosViewModel
             )
             // NOTA: Si tu AppNavGraph no tiene este parámetro aún, basta con agregarlo:
             // fun AppNavGraph(navController: NavHostController, authViewModel: AuthViewModel) { ... }
