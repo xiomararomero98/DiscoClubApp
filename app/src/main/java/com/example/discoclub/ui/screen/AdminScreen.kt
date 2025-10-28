@@ -236,6 +236,9 @@ fun AdminPerfilesScreen(
 ) {
     // Observamos los usuarios desde la base de datos (flujo reactivo)
     val usuarios by vm.getAllUsers().collectAsState(initial = emptyList())
+    // Controla el usuario seleccionado para eliminar
+    var userToDelete by remember { mutableStateOf<com.example.discoclub.data.local.user.UserEntity?>(null) }
+
 
     // Contenedor principal
     Column(
@@ -295,25 +298,58 @@ fun AdminPerfilesScreen(
                                 Text("🎭 ${user.role ?: "Sin rol"}")
                             }
 
-                            // Botón Editar
-                            IconButton(onClick = {
-                                // Navega al formulario de edición de perfil, pasando el ID del usuario
-                                navController.navigate("perfil/${user.id}")
-                            }) {
-                                Icon(
-                                    Icons.Filled.Edit,
-                                    contentDescription = "Editar Perfil",
-                                    tint = Color(0xFF6A1B9A)
-                                )
+                            Column(
+                                horizontalAlignment = Alignment.End,
+                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                // Botón Editar
+                                IconButton(onClick = {
+                                    // Navega al formulario de edición de perfil, pasando el ID del usuario
+                                    navController.navigate("perfil/${user.id}")
+                                }) {
+                                    Icon(
+                                        Icons.Filled.Edit,
+                                        contentDescription = "Editar Perfil",
+                                        tint = Color(0xFF6A1B9A)
+                                    )
+                                }
+                                // Botón Eliminar
+                                IconButton(onClick = { userToDelete = user }) {
+                                    Icon(
+                                        Icons.Filled.Delete,
+                                        contentDescription = "Eliminar Perfil",
+                                        tint = Color(0xFFD32F2F) // rojo elegante
+                                    )
+                                }
                             }
                         }
                     }
                 }
             }
         }
+        //  Diálogo de confirmación de eliminación
+        if (userToDelete != null) {
+            AlertDialog(
+                onDismissRequest = { userToDelete = null },
+                confirmButton = {
+                    TextButton(onClick = {
+                        vm.deleteUser(userToDelete!!)
+                        userToDelete = null
+                    }) {
+                        Text("Sí, eliminar", color = Color.Red)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { userToDelete = null }) {
+                        Text("Cancelar")
+                    }
+                },
+                title = { Text("Confirmar eliminación") },
+                text = { Text("¿Estás seguro de que quieres eliminar este perfil?") }
+            )
+        }
     }
 }
-
 // ------------------------------------------------------------
 //  SUBPANTALLA 3: REGISTROS / REPORTES
 // ------------------------------------------------------------
