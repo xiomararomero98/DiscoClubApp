@@ -22,8 +22,6 @@ import com.example.discoclub.ui.components.AppDrawer // Drawer composable
 import com.example.discoclub.ui.components.defaultDrawerItems // Ítems por defecto
 import com.example.discoclub.ui.screen.* // Home/Login/Register/Products/Cart/Profile
 import com.example.discoclub.ui.viewmodel.AuthViewModel
-
-// NUEVO: DB/Repos/VM de cliente
 import com.example.discoclub.data.local.database.AppDatabase
 import com.example.discoclub.data.repository.ProductosRepository
 import com.example.discoclub.data.repository.CarritoRepository
@@ -43,14 +41,14 @@ fun AppNavGraph(
     val scope = rememberCoroutineScope()
 
     // Helpers de navegación (reutilizamos en topbar/drawer/botones)
-    val goHome: () -> Unit      = { navController.navigate(Route.Home.path) }
-    val goLogin: () -> Unit     = { navController.navigate(Route.Login.path) }
-    val goRegister: () -> Unit  = { navController.navigate(Route.Register.path) }
-    val goAdmin: () -> Unit     = {navController.navigate(Route.Admin.path)}
-    val goPedido: () -> Unit   = {navController.navigate(Route.Pedido.path)}
+    val goHome: () -> Unit = { navController.navigate(Route.Home.path) }
+    val goLogin: () -> Unit = { navController.navigate(Route.Login.path) }
+    val goRegister: () -> Unit = { navController.navigate(Route.Register.path) }
+    val goAdmin: () -> Unit = { navController.navigate(Route.Admin.path) }
+    val goPedido: () -> Unit = { navController.navigate(Route.Pedido.path) }
     val goProducts = { navController.navigate(Route.Products.path) }
-    val goCart     = { navController.navigate(Route.Cart.path) }
-    val goProfile  = { navController.navigate(Route.Profile.path) }
+    val goCart = { navController.navigate(Route.Cart.path) }
+    val goProfile = { navController.navigate(Route.Profile.path) }
 
     // NUEVO: Instancia DB y Repos para el flujo Cliente
     val context = LocalContext.current
@@ -135,7 +133,7 @@ fun AppNavGraph(
                     onHome = goHome,
                     onLogin = goLogin,
                     onRegister = goRegister,
-                    onAdmin =  goAdmin,
+                    onAdmin = goAdmin,
                     onPedido = goPedido,
                     onCart = goCart,
                     onProfile = goProfile,
@@ -175,60 +173,29 @@ fun AppNavGraph(
                         onGoLogin = goLogin
                     )
                 }
-
-<<<<<<< HEAD
-                        navController = navController,
-                        vm = authViewModel   // se pasa el ViewModel al AdminScreen
+                composable(Route.Products.path) {
+                    ProductsScreen(
+                        // Tu pantalla ya era “base”; ahora pásale el VM real
+                        vm = productsVm,
+                        onGoCart = goCart,
+                        onGoProfile = goProfile
                     )
                 }
-                // edición de perfil
-                // ------------------------------------------------------------
-                composable(
-                    route = "EditarPerfil/{Id}",  //  acepta un parámetro dinámico (userId)
-                    arguments = listOf(navArgument("id") { type = NavType.LongType }) //  Se define el tipo del parámetro como Long
-                ) { backStackEntry ->
-
-                    // Extrae el ID del usuario desde la ruta
-                    val userId = backStackEntry.arguments?.getLong("id") ?: 0L
-
-                    // Muestra la pantalla de perfil con ese ID
-                    PerfilScreenVm(
-                        vm = authViewModel,  // tu ViewModel de autenticación o usuarios
-                        onPerfilGuardado = { navController.popBackStack() },
-                        onCancelarClick = { navController.popBackStack() }
-                    )
-=======
-                composable(Route.Products.path) {
-                        ProductsScreen(
-                            // Tu pantalla ya era “base”; ahora pásale el VM real
-                            vm = productsVm,
-                            onGoCart = goCart,
-                            onGoProfile = goProfile
-                        )
-                    }
                 composable(Route.Cart.path) {
-                        CartScreen(
-                            vm = cartVm,
-                            onGoProducts = goProducts,
-                            onGoProfile = goProfile
-                        )
-                    }
+                    CartScreen(
+                        vm = cartVm,
+                        onGoProducts = goProducts,
+                        onGoProfile = goProfile
+                    )
+                }
                 composable(Route.Profile.path) {
-                        PerfilScreen(
-                            onGuardarClick = {},
-                            onCancelarClick = {navController.popBackStack()},
-                            onLogout = {
-                                // Aquí podrías limpiar sesión si ya tienes SessionManager
-                                navController.navigate(Route.Home.path) {
-                                    popUpTo(Route.Home.path) { inclusive = true }
-                                    launchSingleTop = true
-                                }
-                            }
-                        )
-                    }
->>>>>>> e82c16492ec21d1b70a49a6f7cbfe4beb62ddac4
+                    PerfilScreen(
+                        onGuardarClick = { _, _, _, _ -> }, // función con 4 parámetros vacíos
+                        onCancelarClick = { navController.popBackStack() } // vuelve atrás
+                    )
                 }
             }
         }
     }
+}
 

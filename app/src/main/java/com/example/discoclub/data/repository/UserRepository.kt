@@ -41,7 +41,7 @@ class UserRepository(
 
     //Funciones para editar/eliminar usuarios
     // Obtener usuario por ID (para pantalla de edición)
-    suspend fun getUserById(id: Int): UserEntity? {
+    suspend fun getUserById(id: Long): UserEntity? {
         return userDao.getById(id)
     }
 

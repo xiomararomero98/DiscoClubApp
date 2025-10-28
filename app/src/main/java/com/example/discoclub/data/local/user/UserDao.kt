@@ -39,5 +39,5 @@ interface UserDao {
 
     // Busca un usuario por ID (para editarlo)
     @Query("SELECT * FROM users WHERE id = :id LIMIT 1")
-    suspend fun getById(id: Int): UserEntity?
+    suspend fun getById(id: Long): UserEntity?
 }
