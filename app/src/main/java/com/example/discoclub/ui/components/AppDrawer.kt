@@ -4,9 +4,10 @@ package com.example.discoclub.ui.components
 import androidx.compose.material.icons.Icons // Íconos Material
 import androidx.compose.material.icons.filled.Home // Ícono Home
 import androidx.compose.material.icons.filled.AccountCircle // Ícono Login
-import androidx.compose.material.icons.filled.BorderColor
 import androidx.compose.material.icons.filled.Person // Ícono Registro
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Shop
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Icon // Ícono en ítem del drawer
 import androidx.compose.material3.NavigationDrawerItem // Ítem seleccionable
 import androidx.compose.material3.NavigationDrawerItemDefaults // Defaults de estilo
@@ -54,11 +55,16 @@ fun defaultDrawerItems(
     onLogin: () -> Unit,  // Acción Login
     onRegister: () -> Unit, // Acción Registro
     onAdmin: () -> Unit,  // Acción Admin
-    onPedido: () -> Unit
+    onPedido: () -> Unit, //accion pedido
+    onCart: () -> Unit,
+    onProducts: ()-> Unit,
+    onProfile: () ->Unit
 ): List<DrawerItem> = listOf(
     DrawerItem("Home", Icons.Filled.Home, onHome),          // Ítem Home
     DrawerItem("Login", Icons.Filled.AccountCircle, onLogin),       // Ítem Login
     DrawerItem("Registro", Icons.Filled.Person, onRegister),// Ítem Registro
     DrawerItem("Admin", Icons.Filled.Settings, onAdmin), // Ítem Admin
-    DrawerItem("Pedido", Icons.Filled.BorderColor, onPedido) //Ítem Pedido
+    DrawerItem("Carrito", Icons.Filled.ShoppingCart, onCart),
+    DrawerItem("Productos", Icons.Filled.Shop, onProducts),
+    DrawerItem("Perfil", Icons.Filled.Person, onProfile)
 )

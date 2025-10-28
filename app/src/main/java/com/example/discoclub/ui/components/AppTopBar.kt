@@ -26,7 +26,13 @@ fun AppTopBar(
     onHome: () -> Unit,       // Navega a Home
     onLogin: () -> Unit,      // Navega a Login
     onRegister: () -> Unit,    // Navega a Registro
-    onPedido: () -> Unit
+    onAdmin: () -> Unit,
+    onPedido: () -> Unit,
+    // accesos cliente (opcionales para no forzar parámetros)
+    onProducts: () -> Unit = {},
+    onCart: () -> Unit = {},
+    onProfile: () -> Unit = {}
+
 ) {
     //lo que hace es crear una variable de estado recordada que le dice a la interfaz
     // si el menú desplegable de 3 puntitos debe estar visible (true) o oculto (false).
@@ -67,6 +73,17 @@ fun AppTopBar(
                     text = { Text("Registro") },
                     onClick = { showMenu = false; onRegister() }
                 )
+
+                // Cliente
+                DropdownMenuItem(
+                    text = { Text("Productos") },
+                    onClick = { showMenu = false; onProducts() })
+                DropdownMenuItem(
+                    text = { Text("Carrito") },
+                    onClick = { showMenu = false; onCart() })
+                DropdownMenuItem(
+                    text = { Text("Perfil") },
+                    onClick = { showMenu = false; onProfile() })
             }
         }
     )
