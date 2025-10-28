@@ -20,7 +20,16 @@ import androidx.compose.ui.graphics.Color                    // Permite aplicar 
 import androidx.compose.animation.AnimatedVisibility          // Permite animar la visibilidad de elementos (mostrar/ocultar)
 import androidx.navigation.NavHostController                 // Controlador de navegación
 import com.example.discoclub.ui.viewmodel.AuthViewModel       // ViewModel con la lógica de autenticación y perfiles
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.launch                                // Permite lanzar corrutinas en el ciclo de vida de la app
+import androidx.compose.animation.core.tween                    // Permite definir una animación de tiempo
+import androidx.compose.animation.fadeIn                        // Permite una animación de aparición
+import androidx.compose.animation.fadeOut                       // Permite una animación de desaparecimiento
+import androidx.compose.animation.slideInVertically             // Permite una animación de deslizamiento hacia arriba
+import androidx.compose.animation.slideOutVertically            // Permite una animación de deslizamiento hacia abajo
+import androidx.compose.foundation.shape.RoundedCornerShape     // Permite aplicar esquinas redondeadas
+import androidx.compose.ui.unit.sp                              // Permite cambiar el tamaño de la fuente
+
+
 
 
 
@@ -86,9 +95,7 @@ fun AdminScreen(
     }
 }
 
-// ------------------------------------------------------------
-// SUBPANTALLA 1: INVENTARIO (CRUD DE PRODUCTOS)
-// ------------------------------------------------------------
+// INVENTARIO (CRUD DE PRODUCTOS)
 
 @Composable
 fun AdminInventarioScreen() {
@@ -228,9 +235,8 @@ fun AdminInventarioScreen() {
     }
 }
 
-// ------------------------------------------------------------
-//  SUBPANTALLA 2: PERFILES DE USUARIO
-// ------------------------------------------------------------
+
+// PERFILES DE USUARIO
 
 @Composable
 fun AdminPerfilesScreen(
@@ -253,18 +259,35 @@ fun AdminPerfilesScreen(
     Scaffold(
         snackbarHost = {
             SnackbarHost(hostState = snackbarHostState) { data ->
-                Snackbar(
-                    modifier = Modifier.padding(12.dp),
-                    containerColor = Color(0xFF6A1B9A), // 💜 Fondo morado
-                    contentColor = Color.White,         // Texto blanco
-                    actionOnNewLine = false,
-                    shape = MaterialTheme.shapes.medium
+                //animacion para el mensaje
+
+                AnimatedVisibility(
+                    visible = true,
+                    enter = fadeIn() + slideInVertically(initialOffsetY = { it / 2 }),
+                    exit = fadeOut() + slideOutVertically(targetOffsetY = { it / 2 })
                 ) {
-                    Text(
-                        text = data.visuals.message, // mensaje del snackbar
-                        color = Color.White,
-                        fontWeight = FontWeight.SemiBold
-                    )
+                    Snackbar(
+                        modifier = Modifier
+                            .padding(horizontal = 24.dp, vertical = 8.dp)
+                            .fillMaxWidth(),
+                        containerColor = Color(0xFF6A1B9A), // aca dice que su fondo será de color morado
+                        contentColor = Color.White,
+                        shape = RoundedCornerShape(16.dp),   // las esquinas del contorno no serán tan intensas
+                        actionOnNewLine = false
+                    ) {
+                        // Centrado y estilo de texto
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = data.visuals.message,
+                                fontSize = 16.sp,              // aca esta el tamaño de la letra
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color.White
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -348,7 +371,7 @@ fun AdminPerfilesScreen(
                                         Icon(
                                             Icons.Filled.Delete,
                                             contentDescription = "Eliminar Perfil",
-                                            tint = Color(0xFFD32F2F) // rojo elegante
+                                            tint = Color(0xFFD32F2F) // aca dice que el color sea rojo
                                         )
                                     }
                                 }
@@ -368,7 +391,7 @@ fun AdminPerfilesScreen(
                             vm.deleteUser(userToDelete!!)
                             coroutineScope.launch {       // lanza corrutina para mostrar mensaje
                                 snackbarHostState.showSnackbar(
-                                    "Perfil eliminado correctamente ✅",
+                                    "Perfil eliminado correctamente ",
                                     withDismissAction = true)
                             }
                             userToDelete = null
@@ -388,9 +411,8 @@ fun AdminPerfilesScreen(
         }
     }
 }
-// ------------------------------------------------------------
-//  SUBPANTALLA 3: REGISTROS / REPORTES
-// ------------------------------------------------------------
+
+//  REGISTROS / REPORTES
 
 @Composable
 fun AdminRegistrosScreen() {
