@@ -21,6 +21,8 @@ import androidx.compose.animation.AnimatedVisibility          // Permite animar 
 import androidx.navigation.NavHostController                 // Controlador de navegación
 import com.example.discoclub.ui.viewmodel.AuthViewModel       // ViewModel con la lógica de autenticación y perfiles
 
+
+
 // ------------------------------------------------------------
 // PANTALLA PRINCIPAL: PANEL DE ADMINISTRACIÓN
 // ------------------------------------------------------------
@@ -236,84 +238,128 @@ fun AdminPerfilesScreen(
 ) {
     // Observamos los usuarios desde la base de datos (flujo reactivo)
     val usuarios by vm.getAllUsers().collectAsState(initial = emptyList())
-
-    // Contenedor principal
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // ---------------- TÍTULO PRINCIPAL ----------------
-        Text(
-            "Gestión de Perfiles de Usuario",
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF6A1B9A),
-            textAlign = TextAlign.Center
+    // Controla el usuario seleccionado para eliminar
+    var userToDelete by remember {
+        mutableStateOf<com.example.discoclub.data.local.user.UserEntity?>(
+            null
         )
+    }
 
-        Spacer(modifier = Modifier.height(12.dp))
+    Scaffold { paddingValues ->
+        // Contenedor principal
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // ---------------- TÍTULO PRINCIPAL ----------------
+            Text(
+                "Gestión de Perfiles de Usuario",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF6A1B9A),
+                textAlign = TextAlign.Center
+            )
 
-        // ---------------- DESCRIPCIÓN ----------------
-        Text(
-            "Aquí podrás visualizar, editar o eliminar perfiles registrados.",
-            textAlign = TextAlign.Center
-        )
+            Spacer(modifier = Modifier.height(12.dp))
 
-        Spacer(modifier = Modifier.height(24.dp))
+            // ---------------- DESCRIPCIÓN ----------------
+            Text(
+                "Aquí podrás visualizar, editar o eliminar perfiles registrados.",
+                textAlign = TextAlign.Center
+            )
 
-        // Si no hay usuarios registrados
-        if (usuarios.isEmpty()) {
-            Text("No hay usuarios registrados aún.", color = Color.Gray)
-        } else {
-            // Lista de usuarios registrados
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            ) {
-                items(usuarios) { user ->
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 6.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
-                    ) {
-                        Row(
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Si no hay usuarios registrados
+            if (usuarios.isEmpty()) {
+                Text("No hay usuarios registrados aún.", color = Color.Gray)
+            } else {
+                // Lista de usuarios registrados
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                ) {
+                    items(usuarios) { user ->
+                        Card(
                             modifier = Modifier
-                                .padding(12.dp)
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
+                                .fillMaxWidth()
+                                .padding(vertical = 6.dp),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
                         ) {
-                            // Muestra los datos del usuario
-                            Column {
-                                Text("👤 ${user.name}", fontWeight = FontWeight.Bold)
-                                Text("📧 ${user.email}")
-                                Text("📞 ${user.phone}")
-                                Text("🎭 ${user.role ?: "Sin rol"}")
-                            }
+                            Row(
+                                modifier = Modifier
+                                    .padding(12.dp)
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                // Muestra los datos del usuario
+                                Column {
+                                    Text("👤 ${user.name}", fontWeight = FontWeight.Bold)
+                                    Text("📧 ${user.email}")
+                                    Text("📞 ${user.phone}")
+                                    Text("🎭 ${user.role ?: "Sin rol"}")
+                                }
 
-                            // Botón Editar
-                            IconButton(onClick = {
-                                // Navega al formulario de edición de perfil, pasando el ID del usuario
-                                navController.navigate("perfil/${user.id}")
-                            }) {
-                                Icon(
-                                    Icons.Filled.Edit,
-                                    contentDescription = "Editar Perfil",
-                                    tint = Color(0xFF6A1B9A)
-                                )
+                                Column(
+                                    horizontalAlignment = Alignment.End,
+                                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    // Botón Editar
+                                    IconButton(onClick = {
+                                        // Navega al formulario de edición de perfil, pasando el ID del usuario
+                                        navController.navigate("perfil/${user.id}")
+                                    }) {
+                                        Icon(
+                                            Icons.Filled.Edit,
+                                            contentDescription = "Editar Perfil",
+                                            tint = Color(0xFF6A1B9A)
+                                        )
+                                    }
+                                    // Botón Eliminar
+                                    IconButton(onClick = { userToDelete = user }) {
+                                        Icon(
+                                            Icons.Filled.Delete,
+                                            contentDescription = "Eliminar Perfil",
+                                            tint = Color(0xFFD32F2F) // rojo elegante
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
+
+
+            //  Diálogo de confirmación de eliminación
+            if (userToDelete != null) {
+                AlertDialog(
+                    onDismissRequest = { userToDelete = null },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            vm.deleteUser(userToDelete!!)
+                            userToDelete = null
+                        }) {
+                            Text("Sí, eliminar", color = Color.Red)
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { userToDelete = null }) {
+                            Text("Cancelar")
+                        }
+                    },
+                    title = { Text("Confirmar eliminación") },
+                    text = { Text("¿Estás seguro de que quieres eliminar este perfil?") }
+                )
+            }
         }
     }
 }
-
 // ------------------------------------------------------------
 //  SUBPANTALLA 3: REGISTROS / REPORTES
 // ------------------------------------------------------------

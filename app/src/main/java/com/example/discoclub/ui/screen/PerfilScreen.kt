@@ -33,29 +33,38 @@ fun PerfilScreenVm(
         vm.clearProfileResult()
         onPerfilGuardado()
     }
-
-    PerfilScreen(
-        user = UserEntity(
-            id = userId,
-            name = state.name,
-            email = state.email,
-            phone = state.phone,
-            password = "",
-            role = state.role
-        ),
-        onGuardarClick = { nombre, correo, telefono, rol ->
-            val user = UserEntity(
+    if (state.name.isNotBlank() || state.email.isNotBlank()) {
+        PerfilScreen(
+            user = UserEntity(
                 id = userId,
-                name = nombre,
-                email = correo,
-                phone = telefono,
+                name = state.name,
+                email = state.email,
+                phone = state.phone,
                 password = "",
-                role = rol
-            )
-            vm.updateUser(user)
-        },
-        onCancelarClick = onCancelarClick
-    )
+                role = state.role
+            ),
+            onGuardarClick = { nombre, correo, telefono, rol ->
+                val user = UserEntity(
+                    id = userId,
+                    name = nombre,
+                    email = correo,
+                    phone = telefono,
+                    password = "",
+                    role = rol
+                )
+                vm.updateUser(user)
+            },
+            onCancelarClick = onCancelarClick
+        )
+    }else{
+        //pequeña animacion o texto mientras carga el usuario
+        Box(
+            Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ){
+            CircularProgressIndicator()
+        }
+    }
 }
 
 @Composable
@@ -64,14 +73,14 @@ fun PerfilScreen(
     onGuardarClick: (String, String, String, String) -> Unit = { _, _, _, _ -> },
     onCancelarClick: () -> Unit = {}
 ) {
-    var nombre by remember { mutableStateOf(user?.name ?: "") }
-    var correo by remember { mutableStateOf(user?.email ?: "") }
-    var telefono by remember { mutableStateOf(user?.phone ?: "") }
-    var rol by remember { mutableStateOf(user?.role ?: "") }
+    var nombre by remember (user?.id) { mutableStateOf(user?.name ?: "") }
+    var correo by remember (user?.id) { mutableStateOf(user?.email ?: "") }
+    var telefono by remember (user?.id) { mutableStateOf(user?.phone ?: "") }
+    var rol by remember (user?.id) { mutableStateOf(user?.role ?: "") }
 
-    var correoError by remember { mutableStateOf<String?>(null) }
-    var telefonoError by remember { mutableStateOf<String?>(null) }
-    var rolError by remember { mutableStateOf<String?>(null) }
+    var correoError by remember (user?.id) { mutableStateOf<String?>(null) }
+    var telefonoError by remember (user?.id) { mutableStateOf<String?>(null) }
+    var rolError by remember (user?.id) { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
