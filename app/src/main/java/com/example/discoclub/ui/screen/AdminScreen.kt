@@ -251,7 +251,23 @@ fun AdminPerfilesScreen(
     val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }//host visible para mostrar el mensaje
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState) { data ->
+                Snackbar(
+                    modifier = Modifier.padding(12.dp),
+                    containerColor = Color(0xFF6A1B9A), // 💜 Fondo morado
+                    contentColor = Color.White,         // Texto blanco
+                    actionOnNewLine = false,
+                    shape = MaterialTheme.shapes.medium
+                ) {
+                    Text(
+                        text = data.visuals.message, // mensaje del snackbar
+                        color = Color.White,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
+        }
     ) { paddingValues ->
         // Contenedor principal
         Column(
@@ -351,7 +367,9 @@ fun AdminPerfilesScreen(
                         TextButton(onClick = {
                             vm.deleteUser(userToDelete!!)
                             coroutineScope.launch {       // lanza corrutina para mostrar mensaje
-                                snackbarHostState.showSnackbar("Perfil eliminado correctamente ✅")
+                                snackbarHostState.showSnackbar(
+                                    "Perfil eliminado correctamente ✅",
+                                    withDismissAction = true)
                             }
                             userToDelete = null
                         }) {
