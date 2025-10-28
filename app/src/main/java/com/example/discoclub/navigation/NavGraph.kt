@@ -128,11 +128,12 @@ fun AppNavGraph(navController: NavHostController,
                 // edición de perfil
                 // ------------------------------------------------------------
                 composable(
-                    route = "perfil/{userId}",  // 👈 acepta un parámetro dinámico (userId)
+                    route = "EditarPerfil/{Id}",  //  acepta un parámetro dinámico (userId)
+                    arguments = listOf(navArgument("id") { type = NavType.LongType }) //  Se define el tipo del parámetro como Long
                 ) { backStackEntry ->
 
                     // Extrae el ID del usuario desde la ruta
-                    val userId = backStackEntry.arguments?.getString("userId")?.toIntOrNull() ?: 0
+                    val userId = backStackEntry.arguments?.getLong("id") ?: 0L
 
                     // Muestra la pantalla de perfil con ese ID
                     PerfilScreenVm(

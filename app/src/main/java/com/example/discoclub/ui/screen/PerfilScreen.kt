@@ -18,6 +18,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 @Composable
 fun PerfilScreenVm(
     vm: AuthViewModel,              // Recibe una instancia del ViewModel que contiene la lógica de perfil
+    userId : Long,                  // ID del usuario que se está editando
     onPerfilGuardado: () -> Unit,   // Función que se ejecutará cuando el perfil se haya guardado correctamente (por ejemplo, volver atrás)
     onCancelarClick: () -> Unit     // Función que se ejecuta al presionar “Cancelar”
 ) {
@@ -28,7 +29,9 @@ fun PerfilScreenVm(
     // la interfaz se vuelve a componer automáticamente con los nuevos datos.
     // ---------------------------------------------------------
     val state by vm.profile.collectAsStateWithLifecycle()
-
+    LaunchedEffect(userId) {
+        vm.loadUserById(userId) //  Llama a una función del ViewModel para buscar al usuario en la base de datos
+    }
     // ---------------------------------------------------------
     // Verifica si el perfil se guardó correctamente.
     // El campo "success" del estado cambia a true cuando la actualización
@@ -37,11 +40,9 @@ fun PerfilScreenVm(
     if (state.success) {
         // Limpia el resultado para evitar que el “éxito” quede marcado al volver a la pantalla.
         vm.clearProfileResult()
-
         // Llama a la función que definiste en el NavGraph (por ejemplo: volver atrás o mostrar mensaje).
         onPerfilGuardado()
     }
-
     // ---------------------------------------------------------
     // Muestra la pantalla visual PerfilScreen.
     // Se le pasan las acciones (callbacks) que debe ejecutar al guardar o cancelar.
@@ -51,37 +52,39 @@ fun PerfilScreenVm(
     // → Se ejecuta la función onCancelarClick(), que normalmente vuelve a la pantalla anterior.
     // ---------------------------------------------------------
     PerfilScreen(
+        user = state.user,// aca pasamos el usuario cargado desde la base de datosh
         onGuardarClick = { nombre, correo, telefono, rol ->
             // Crea un usuario actualizado con los nuevos datos
-            val user = com.example.discoclub.data.local.user.UserEntity(
-                id = 0L, // ⚠️ luego lo cambiamos según el usuario real seleccionado
+            val user = state.user?.copy(
+                id = 0L, //  luego lo cambiamos según el usuario real seleccionado
                 name = nombre,
                 email = correo,
                 phone = telefono,
                 password = "", // (no se toca aquí)
                 role = rol
             )
-
-            vm.updateUser(user) // Llama al repositorio para guardar cambios
+            if (user != null) {
+                vm.updateUser(user) // Llama al repositorio para guardar cambios
+            }
         },
         onCancelarClick = onCancelarClick
     )
-
 }
 
 // Perfil de usuario
 
 @Composable
 fun PerfilScreen(
+    user: UserEntity? = null,
     onGuardarClick: (String, String, String, String) -> Unit = { _, _, _, _ -> },// Acción al presionar el botón “Guardar”
     onCancelarClick: () -> Unit = {}   // Acción opcional al presionar el botón “Cancelar”
 ) {
     // ---------------- ESTADOS ----------------
     // Cada variable representa el valor que el usuario escribe en los campos del formulario
-    var nombre by remember { mutableStateOf("") }            // Campo: nombre del usuario
-    var correo by remember { mutableStateOf("") }            // Campo: correo electrónico
-    var telefono by remember { mutableStateOf("") }          // Campo: número de teléfono
-    var rol by remember { mutableStateOf("") }               // Campo: rol o tipo de usuario (admin, cliente, etc.)
+    var nombre by remember { mutableStateOf(user?.name ?:"")}            // Campo: nombre del usuario
+    var correo by remember { mutableStateOf(user?.email ?: "") }            // Campo: correo electrónico
+    var telefono by remember { mutableStateOf(user?.phone ?: "") }          // Campo: número de teléfono
+    var rol by remember { mutableStateOf(user?.role ?: "") }               // Campo: rol o tipo de usuario (admin, cliente, etc.)
 
     //----------------- VARIABLES DE ERROR ---------------------------
     var correoError by remember { mutableStateOf<String?>(null) }

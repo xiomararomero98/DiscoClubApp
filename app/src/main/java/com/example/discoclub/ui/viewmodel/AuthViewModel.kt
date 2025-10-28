@@ -47,13 +47,10 @@ data class RegisterUiState(
 )
 // ----------------- COLECCIÓN EN MEMORIA (solo para la demo) -----------------
 
-//2.- Eliminamos la estructura de DemoUser
-
 class AuthViewModel (
-    // ✅ NUEVO: 4.- inyectamos el repositorio real que usa Room/SQLite
+    // NUEVO: 4.- inyectamos el repositorio real que usa Room/SQLite
     private val repository: UserRepository
 ): ViewModel(){
-    // 3.- Eliminamos Colección **estática** en memoria compartida entre instancias del VM (sin storage persistente)
     // Flujos de estado para observar desde la UI
     private val _login = MutableStateFlow(LoginUiState()) //estado interno (login)
     val  login: StateFlow<LoginUiState> = _login //exposicion inmutable
@@ -86,8 +83,6 @@ class AuthViewModel (
         viewModelScope.launch { //lanzamos corrutina
             _login.update { it.copy(isSubmitting = true, errorMsg = null, success = false ) } //seteamos loading
             delay(500)
-
-            //6.- Se cambia lo anterior por esto ✅ NUEVO: consulta real a la BD vía repositorio
 
             val result = repository.login(s.email.trim(), s.pass)
 
@@ -154,8 +149,6 @@ class AuthViewModel (
         viewModelScope.launch {                             // Corrutina
             _register.update { it.copy(isSubmitting = true, errorMsg = null, success = false) } // Loading
             delay(700)                                      // Simulamos IO
-
-            // 7.- Se cambia esto por lo anterior✅ NUEVO: inserta en BD (con teléfono) vía repositorio
             val result = repository.register(
                 name = s.name.trim(),
                 email = s.email.trim(),
@@ -208,24 +201,23 @@ class AuthViewModel (
     // Obtener todos los usuarios para mostrar en admin y perfiles
     fun getAllUsers() = repository.getAllUsers()
 
-    // Esta función busca un usuario por su ID y carga sus datos en el estado del perfil.
-    // Se usa cuando el admin entra a "Editar perfil", así puede ver los datos actuales.
-    fun getUserById(id: Int) {
-        viewModelScope.launch { // Lanzamos una corrutina (proceso en segundo plano)
-            val user = repository.getUserById(id) // Le pedimos al repositorio que busque el usuario
-            user?.let {
-                // Si lo encuentra, actualizamos el estado del perfil con los datos del usuario
+    fun loadUserById(id: Long) {
+        viewModelScope.launch {
+            val user = repository.getUserById(id) // Pedimos al repositorio el usuario según su ID
+            if (user != null) {
+                // Si lo encuentra, guardamos el usuario completo en el estado del perfil
                 _profile.update {
                     it.copy(
                         name = user.name,
                         email = user.email,
                         phone = user.phone,
-                        role = user.role ?: "" // Si no tiene rol, dejamos el campo vacío
+                        role = user.role ?: ""
                     )
                 }
             }
         }
     }
+
 
     // Esta función actualiza los datos del usuario en la base de datos.
     // Se llama cuando el admin presiona "Guardar cambios" en la pantalla de edición.
