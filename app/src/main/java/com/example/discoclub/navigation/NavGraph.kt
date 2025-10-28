@@ -30,6 +30,8 @@ import com.example.discoclub.ui.viewmodel.CartViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 
 
 @Composable // Gráfico de navegación + Drawer + Scaffold + BottomBar (solo client/*)
@@ -198,6 +200,21 @@ fun AppNavGraph(
                     AdminScreen(
                         navController = navController,
                         vm = authViewModel
+                    )
+                }
+                // ---------- RUTA PARA EDITAR PERFIL ----------
+                composable(
+                    route = "EditarPerfil/{id}",
+                    arguments = listOf(navArgument("id") { type = NavType.LongType })
+                ) { backStackEntry ->
+
+                    val userId = backStackEntry.arguments?.getLong("id") ?: 0L
+
+                    PerfilScreenVm(
+                        vm = authViewModel,
+                        userId = userId,
+                        onPerfilGuardado = { navController.popBackStack() },
+                        onCancelarClick = { navController.popBackStack() }
                     )
                 }
             }

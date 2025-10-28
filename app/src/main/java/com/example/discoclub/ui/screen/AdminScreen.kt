@@ -22,7 +22,7 @@ import androidx.navigation.NavHostController                 // Controlador de n
 import com.example.discoclub.ui.viewmodel.AuthViewModel       // ViewModel con la lógica de autenticación y perfiles
 
 // ------------------------------------------------------------
-// 🟣 PANTALLA PRINCIPAL: PANEL DE ADMINISTRACIÓN
+// PANTALLA PRINCIPAL: PANEL DE ADMINISTRACIÓN
 // ------------------------------------------------------------
 
 @OptIn(ExperimentalMaterial3Api::class) // Indica que se usan funciones experimentales de Material 3
@@ -84,7 +84,7 @@ fun AdminScreen(
 }
 
 // ------------------------------------------------------------
-// 🟣 SUBPANTALLA 1: INVENTARIO (CRUD DE PRODUCTOS)
+// SUBPANTALLA 1: INVENTARIO (CRUD DE PRODUCTOS)
 // ------------------------------------------------------------
 
 @Composable
@@ -226,7 +226,7 @@ fun AdminInventarioScreen() {
 }
 
 // ------------------------------------------------------------
-// 🟣 SUBPANTALLA 2: PERFILES DE USUARIO
+//  SUBPANTALLA 2: PERFILES DE USUARIO
 // ------------------------------------------------------------
 
 @Composable
@@ -315,7 +315,7 @@ fun AdminPerfilesScreen(
 }
 
 // ------------------------------------------------------------
-// 🟣 SUBPANTALLA 3: REGISTROS / REPORTES
+//  SUBPANTALLA 3: REGISTROS / REPORTES
 // ------------------------------------------------------------
 
 @Composable
