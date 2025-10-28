@@ -11,5 +11,10 @@ sealed class Route(val path: String) { // Cada objeto representa una pantalla
     data object Admin    : Route("admin")    // Ruta Admin
     data object Pedido: Route("pedido")
 
+    // Cliente
+    data object Products : Route("products")
+    data object Cart     : Route("cart")
+    data object Profile  : Route("profile")
+
 }
 

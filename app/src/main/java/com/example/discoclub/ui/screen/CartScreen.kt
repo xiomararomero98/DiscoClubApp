@@ -12,11 +12,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.discoclub.data.local.carrito.CarritoEntity
 import com.example.discoclub.ui.utils.toCLP
+import com.example.discoclub.ui.viewmodel.CartViewModel
 
 @Composable
 fun CartScreen(
     onGoProducts: () -> Unit,
-    onGoProfile: () -> Unit
+    onGoProfile: () -> Unit,
+    vm: CartViewModel
 ) {
     val bg = MaterialTheme.colorScheme.surfaceVariant
 

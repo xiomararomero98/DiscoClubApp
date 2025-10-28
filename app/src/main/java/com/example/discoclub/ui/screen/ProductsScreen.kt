@@ -13,9 +13,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.discoclub.data.local.productos.ProductosEntity
 import com.example.discoclub.ui.utils.toCLP
+import com.example.discoclub.ui.viewmodel.ProductsViewModel
 
 @Composable
 fun ProductsScreen(
+    vm: ProductsViewModel,            // <-- AGREGA ESTE PARÁMETRO
+
     onGoCart: () -> Unit,
     onGoProfile: () -> Unit
 ) {
