@@ -32,6 +32,13 @@ class CarritoRepository(
         carritoDao.upsert(entity)
     }
 
+    suspend fun decrementOrRemove(productoId: Long) {
+        val current = carritoDao.getByProductoId(productoId) ?: return
+        val nueva = current.cantidad - 1
+        if (nueva <= 0) carritoDao.removeByProductoId(productoId)
+        else carritoDao.upsert(current.copy(cantidad = nueva))
+    }
+
     suspend fun updateCantidad(productoId: Long, nueva: Int) {
         val current = carritoDao.getByProductoId(productoId) ?: return
         if (nueva <= 0) carritoDao.removeByProductoId(productoId)
@@ -40,4 +47,8 @@ class CarritoRepository(
 
     suspend fun remove(productoId: Long) = carritoDao.removeByProductoId(productoId)
     suspend fun clear() = carritoDao.clear()
+    suspend fun checkout() {
+        // (luego acá puedes persistir el pedido)
+        carritoDao.clear()
+    }
 }

@@ -7,7 +7,6 @@ import androidx.compose.ui.Modifier // Modificador
 import androidx.navigation.NavHostController // Controlador de navegación
 import androidx.navigation.compose.NavHost // Contenedor de destinos
 import androidx.navigation.compose.composable // Declarar cada destino
-import androidx.navigation.compose.navigation // Subgráfico
 import androidx.navigation.compose.currentBackStackEntryAsState
 import kotlinx.coroutines.launch // Para abrir/cerrar drawer con corrutinas
 
@@ -177,8 +176,8 @@ fun AppNavGraph(
                 }
                 composable(Route.Products.path) {
                     ProductsScreen(
-                        // Tu pantalla ya era “base”; ahora pásale el VM real
                         vm = productsVm,
+                        carritoVm = cartVm,
                         onGoCart = goCart,
                         onGoProfile = goProfile
                     )
