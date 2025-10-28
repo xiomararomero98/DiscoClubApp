@@ -197,6 +197,12 @@ class AuthViewModel (
     fun clearProfileResult() {
         _profile.update { it.copy(success = false) }
     }
+    // Limpia los datos del perfil actual para evitar que se muestren los anteriores
+    fun clearCurrentUser() {
+        _profile.update {
+            ProfileState() // Reinicia el estado del perfil (todo vacío)
+        }
+    }
 
     // Obtener todos los usuarios para mostrar en admin y perfiles
     fun getAllUsers() = repository.getAllUsers()

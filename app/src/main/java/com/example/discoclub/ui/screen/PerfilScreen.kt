@@ -25,7 +25,8 @@ fun PerfilScreenVm(
     val state by vm.profile.collectAsStateWithLifecycle()
 
     LaunchedEffect(userId) {
-        vm.loadUserById(userId)
+        vm.clearCurrentUser()   //  Limpia los datos del usuario anterior
+        vm.loadUserById(userId) //  Carga los datos del usuario actual
     }
 
     if (state.success) {

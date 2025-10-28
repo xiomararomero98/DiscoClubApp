@@ -204,7 +204,7 @@ fun AppNavGraph(
                 }
                 // ---------- RUTA PARA EDITAR PERFIL ----------
                 composable(
-                    route = "EditarPerfil/{id}",
+                    route = "perfil/{id}",
                     arguments = listOf(navArgument("id") { type = NavType.LongType })
                 ) { backStackEntry ->
 
