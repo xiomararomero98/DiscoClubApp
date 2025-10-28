@@ -2,6 +2,7 @@ package com.example.discoclub.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.discoclub.data.local.user.UserEntity
 import com.example.discoclub.data.repository.UserRepository
 import com.example.discoclub.domain.validation.validateConfirm
 import com.example.discoclub.domain.validation.validateEmail
@@ -204,9 +205,43 @@ class AuthViewModel (
         _profile.update { it.copy(success = false) }
     }
 
-    // ---------------------------------------------------------
-    //  Obtener todos los usuarios (para mostrar en Admin → Perfiles)
-    // ---------------------------------------------------------
+    // Obtener todos los usuarios para mostrar en admin y perfiles
     fun getAllUsers() = repository.getAllUsers()
+
+    // Esta función busca un usuario por su ID y carga sus datos en el estado del perfil.
+    // Se usa cuando el admin entra a "Editar perfil", así puede ver los datos actuales.
+    fun getUserById(id: Int) {
+        viewModelScope.launch { // Lanzamos una corrutina (proceso en segundo plano)
+            val user = repository.getUserById(id) // Le pedimos al repositorio que busque el usuario
+            user?.let {
+                // Si lo encuentra, actualizamos el estado del perfil con los datos del usuario
+                _profile.update {
+                    it.copy(
+                        name = user.name,
+                        email = user.email,
+                        phone = user.phone,
+                        role = user.role ?: "" // Si no tiene rol, dejamos el campo vacío
+                    )
+                }
+            }
+        }
+    }
+
+    // Esta función actualiza los datos del usuario en la base de datos.
+    // Se llama cuando el admin presiona "Guardar cambios" en la pantalla de edición.
+    fun updateUser(user: UserEntity) {
+        viewModelScope.launch { // Corrutina para ejecutar en segundo plano
+            repository.updateUser(user) // Le decimos al repositorio que actualice el usuario en Room
+            _profile.update { it.copy(success = true) } // Cambiamos el estado para mostrar mensaje de éxito
+        }
+    }
+
+    // Esta función elimina un usuario de la base de datos.
+    // Se usa si el admin decide borrar el perfil de un empleado.
+    fun deleteUser(user: UserEntity) {
+        viewModelScope.launch { // Corrutina para no bloquear la app
+            repository.deleteUser(user) // Llamamos al repositorio para eliminar el usuario
+        }
+    }
 
 }

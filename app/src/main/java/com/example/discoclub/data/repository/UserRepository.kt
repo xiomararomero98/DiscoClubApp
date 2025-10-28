@@ -36,6 +36,22 @@ class UserRepository(
         return Result.success(id)                                    // Devuelve ID generado
     }
 
-    // ✅ Obtener todos los usuarios registrados (para AdminPerfilesScreen)
+    //  Obtener todos los usuarios registrados (para AdminPerfilesScreen)
     fun getAllUsers(): Flow<List<UserEntity>> = userDao.getAllUsers()
+
+    //Funciones para editar/eliminar usuarios
+    // Obtener usuario por ID (para pantalla de edición)
+    suspend fun getUserById(id: Int): UserEntity? {
+        return userDao.getById(id)
+    }
+
+    // Actualizar usuario existente
+    suspend fun updateUser(user: UserEntity) {
+        userDao.update(user)
+    }
+
+    // Eliminar usuario
+    suspend fun deleteUser(user: UserEntity) {
+        userDao.delete(user)
+    }
 }
