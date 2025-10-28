@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color                    // Permite aplicar 
 import androidx.compose.animation.AnimatedVisibility          // Permite animar la visibilidad de elementos (mostrar/ocultar)
 import androidx.navigation.NavHostController                 // Controlador de navegación
 import com.example.discoclub.ui.viewmodel.AuthViewModel       // ViewModel con la lógica de autenticación y perfiles
+import kotlinx.coroutines.launch
 
 
 
@@ -245,7 +246,29 @@ fun AdminPerfilesScreen(
         )
     }
 
-    Scaffold { paddingValues ->
+    // snackbar configuracion
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState) { data ->
+                Snackbar(
+                    modifier = Modifier.padding(12.dp),
+                    containerColor = Color(0xFF6A1B9A), // 💜 Fondo morado
+                    contentColor = Color.White,         // Texto blanco
+                    actionOnNewLine = false,
+                    shape = MaterialTheme.shapes.medium
+                ) {
+                    Text(
+                        text = data.visuals.message, // mensaje del snackbar
+                        color = Color.White,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
+        }
+    ) { paddingValues ->
         // Contenedor principal
         Column(
             modifier = Modifier
@@ -343,6 +366,11 @@ fun AdminPerfilesScreen(
                     confirmButton = {
                         TextButton(onClick = {
                             vm.deleteUser(userToDelete!!)
+                            coroutineScope.launch {       // lanza corrutina para mostrar mensaje
+                                snackbarHostState.showSnackbar(
+                                    "Perfil eliminado correctamente ✅",
+                                    withDismissAction = true)
+                            }
                             userToDelete = null
                         }) {
                             Text("Sí, eliminar", color = Color.Red)
