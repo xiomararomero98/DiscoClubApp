@@ -116,11 +116,12 @@ abstract class AppDatabase : RoomDatabase() {
                                     }
 
                                     if (pedidoDao.count() == 0){
-                                        PedidoEntity(
-                                            mesaId = 1,
-                                            idProducto = 2,
-                                            cantidad = 3
+                                        val pedidoSeed = PedidoEntity(
+                                                mesaId = 1,
+                                                idProducto = 2,
+                                                cantidad = 3
                                         )
+                                        pedidoDao.insertOne(pedidoSeed)
                                     }
                                 }
                             }

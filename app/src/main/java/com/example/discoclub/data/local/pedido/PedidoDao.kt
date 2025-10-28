@@ -27,6 +27,9 @@ interface PedidoDao{
     @Query("DELETE FROM Pedido")
     suspend fun clear()
 
+    @Query("DELETE FROM Pedido WHERE id = :id")
+    suspend fun deleteById(id:Long)
+
     @Query("SELECT * FROM Pedido WHERE mesaId = :mesaId")
     fun getPedidosByMesa(mesaId: Long): Flow<List<PedidoEntity>>
 

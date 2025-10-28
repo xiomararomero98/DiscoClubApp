@@ -63,7 +63,7 @@ fun AppRoot() { // Raíz de la app para separar responsabilidades (se conserva)
 
     val pedidosRepository = PedidoRepository(pedidoDao)
 
-    val pedidosViewModel: PedidosViewModel(
+    val pedidosViewModel: PedidosViewModel = viewModel(
         factory = PedidosViewModelFactory(pedidosRepository)
     )
 
