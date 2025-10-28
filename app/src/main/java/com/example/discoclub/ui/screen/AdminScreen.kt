@@ -245,7 +245,13 @@ fun AdminPerfilesScreen(
         )
     }
 
-    Scaffold { paddingValues ->
+    // snackbar configuracion
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }//host visible para mostrar el mensaje
+    ) { paddingValues ->
         // Contenedor principal
         Column(
             modifier = Modifier
