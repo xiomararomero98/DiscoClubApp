@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import com.example.discoclub.data.local.carrito.CarritoEntity
 import com.example.discoclub.ui.utils.toCLP
 import com.example.discoclub.ui.viewmodel.CartViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun CartScreen(
@@ -21,71 +22,118 @@ fun CartScreen(
     vm: CartViewModel
 ) {
     val bg = MaterialTheme.colorScheme.surfaceVariant
+    val items by vm.items.collectAsState()
+    val total by vm.totalCLP.collectAsState()
 
-    // Datos de ejemplo (luego se conectan al ViewModel)
-    val carrito = remember {
-        listOf(
-            CarritoEntity(productoId = 1L, nombreProducto = "Pisco Sour", precioUnitario = 4500L, cantidad = 2),
-            CarritoEntity(productoId = 2L, nombreProducto = "Vodka + Energética", precioUnitario = 5500L, cantidad = 1)
-        )
-    }
+    // ✅ Snackbar para mensaje de compra finalizada
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
-    val total = carrito.sumOf { it.precioUnitario * it.cantidad }
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        containerColor = bg
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            Column {
+                Text(
+                    text = "Tu carrito",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(Modifier.height(12.dp))
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(bg)
-            .padding(16.dp),
-        contentAlignment = Alignment.TopCenter
-    ) {
-        Column {
-            Text(
-                text = "Tu carrito",
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.SemiBold
-            )
-            Spacer(Modifier.height(12.dp))
+                if (items.isEmpty()) {
+                    Text("El carrito está vacío", style = MaterialTheme.typography.bodyLarge)
+                } else {
+                    LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        items(items, key = { it.productoId }) { item ->
+                            CarritoItemCard(
+                                item = item,
+                                onDecrement = {
+                                    val nueva = item.cantidad - 1
+                                    vm.updateCantidad(item.productoId, nueva) // o vm.decrementOrRemove(item.productoId)
+                                },
+                                onIncrement = {
+                                    val nueva = item.cantidad + 1
+                                    vm.updateCantidad(item.productoId, nueva) // o vm.add(...)
+                                },
+                                onRemove = { vm.remove(item.productoId) }
+                            )
+                        }
+                    }
 
-            if (carrito.isEmpty()) {
-                Text("El carrito está vacío", style = MaterialTheme.typography.bodyLarge)
-            } else {
-                LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    items(carrito) { item ->
-                        CarritoItemCard(item)
+                    Spacer(Modifier.height(16.dp))
+
+                    ElevatedCard(modifier = Modifier.fillMaxWidth()) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                "Total a pagar: ${total.toCLP()}",
+                                style = MaterialTheme.typography.titleLarge
+                            )
+                            Spacer(Modifier.height(8.dp))
+                            Button(
+                                onClick = {
+                                    // ✅ Limpia carrito → muestra snackbar → navega a productos
+                                    scope.launch {
+                                        vm.checkout()
+                                        snackbarHostState.showSnackbar(
+                                            message = "Compra finalizada correctamente 🎉",
+                                            duration = SnackbarDuration.Short
+                                        )
+                                        onGoProducts()
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) { Text("Finalizar compra") }
+                        }
                     }
                 }
 
                 Spacer(Modifier.height(16.dp))
-                ElevatedCard(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text("Total a pagar: ${total.toCLP()}", style = MaterialTheme.typography.titleLarge)
-                        Spacer(Modifier.height(8.dp))
-                        Button(onClick = { /* TODO proceso de compra */ }, modifier = Modifier.fillMaxWidth()) {
-                            Text("Finalizar compra")
-                        }
-                    }
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Button(onClick = onGoProducts) { Text("Volver a productos") }
+                    OutlinedButton(onClick = onGoProfile) { Text("Perfil") }
                 }
-            }
-
-            Spacer(Modifier.height(16.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                Button(onClick = onGoProducts) { Text("Volver a productos") }
-                OutlinedButton(onClick = onGoProfile) { Text("Perfil") }
             }
         }
     }
 }
 
 @Composable
-fun CarritoItemCard(item: CarritoEntity) {
+private fun CarritoItemCard(
+    item: CarritoEntity,
+    onDecrement: () -> Unit,
+    onIncrement: () -> Unit,
+    onRemove: () -> Unit
+) {
     ElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(item.nombreProducto, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-            Text("Cantidad: ${item.cantidad}")
+            Text(
+                item.nombreProducto,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(Modifier.height(6.dp))
             Text("Precio unitario: ${item.precioUnitario.toCLP()}")
-            Spacer(Modifier.height(8.dp))
-            Text("Subtotal: ${(item.precioUnitario * item.cantidad).toCLP()}", fontWeight = FontWeight.Medium)
+            Text("Cantidad: ${item.cantidad}")
+            Spacer(Modifier.height(6.dp))
+            Text(
+                "Subtotal: ${(item.precioUnitario * item.cantidad).toCLP()}",
+                fontWeight = FontWeight.Medium
+            )
+            Spacer(Modifier.height(12.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedButton(onClick = onDecrement, enabled = item.cantidad > 0) { Text("-") }
+                OutlinedButton(onClick = onIncrement) { Text("+") }
+                Spacer(Modifier.weight(1f))
+                TextButton(onClick = onRemove) { Text("Quitar") }
+            }
         }
     }
 }
