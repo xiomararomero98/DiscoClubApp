@@ -76,4 +76,7 @@ dependencies {
 
     //carga de imagnees en compose (caché)
     implementation("io.coil-kt:coil-compose:2.7.0")
+
+    //DATASTORE
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 }
