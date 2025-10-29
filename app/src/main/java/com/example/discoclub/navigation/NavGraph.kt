@@ -155,6 +155,10 @@ fun AppNavGraph(
                 // ---------- RUTAS PÚBLICAS ----------
                 composable(Route.Home.path) {
                     HomeScreen(
+                        vm = productsVm,
+                        carritoVm= cartVm,
+                        onSeeAll = goProducts,
+                        onGoCart = goCart,
                         onGoLogin = goLogin,
                         onGoRegister = goRegister
                     )
