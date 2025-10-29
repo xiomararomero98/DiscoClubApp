@@ -105,9 +105,6 @@ fun AdminInventarioScreen() {
     var stock by remember { mutableStateOf("") }             // Campo: cantidad en stock
     var imagen by remember { mutableStateOf("") }            // Campo: URL de imagen del producto
 
-    val vm: AuthViewModel = viewModel()
-    val state by vm.register.collectAsStateWithLifecycle()
-
     // Lista que almacena los productos creados
     var productos by remember { mutableStateOf(listOf<String>()) }
 
