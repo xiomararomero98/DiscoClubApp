@@ -24,8 +24,6 @@ fun CartScreen(
     val bg = MaterialTheme.colorScheme.surfaceVariant
     val items by vm.items.collectAsState()
     val total by vm.totalCLP.collectAsState()
-
-    // ✅ Snackbar para mensaje de compra finalizada
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -79,11 +77,10 @@ fun CartScreen(
                             Spacer(Modifier.height(8.dp))
                             Button(
                                 onClick = {
-                                    // ✅ Limpia carrito → muestra snackbar → navega a productos
                                     scope.launch {
                                         vm.checkout()
                                         snackbarHostState.showSnackbar(
-                                            message = "Compra finalizada correctamente 🎉",
+                                            message = "Compra finalizada correctamente",
                                             duration = SnackbarDuration.Short
                                         )
                                         onGoProducts()

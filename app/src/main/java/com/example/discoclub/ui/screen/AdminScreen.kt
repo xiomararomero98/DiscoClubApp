@@ -294,7 +294,6 @@ fun AdminPerfilesScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // ---------------- TÍTULO PRINCIPAL ----------------
             Text(
                 "Gestión de Perfiles de Usuario",
                 style = MaterialTheme.typography.titleLarge,
@@ -305,7 +304,6 @@ fun AdminPerfilesScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // ---------------- DESCRIPCIÓN ----------------
             Text(
                 "Aquí podrás visualizar, editar o eliminar perfiles registrados.",
                 textAlign = TextAlign.Center
@@ -339,10 +337,10 @@ fun AdminPerfilesScreen(
                             ) {
                                 // Muestra los datos del usuario
                                 Column {
-                                    Text("👤 ${user.name}", fontWeight = FontWeight.Bold)
-                                    Text("📧 ${user.email}")
-                                    Text("📞 ${user.phone}")
-                                    Text("🎭 ${user.role ?: "Sin rol"}")
+                                    Text(" ${user.name}", fontWeight = FontWeight.Bold)
+                                    Text(" ${user.email}")
+                                    Text(" ${user.phone}")
+                                    Text(" ${user.role ?: "Sin rol"}")
                                 }
 
                                 Column(

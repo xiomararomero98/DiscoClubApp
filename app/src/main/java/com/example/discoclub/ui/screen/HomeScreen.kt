@@ -1,5 +1,6 @@
 package com.example.discoclub.ui.screen
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
@@ -16,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -29,6 +31,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
+import com.example.discoclub.R
 
 @Composable
 fun HomeScreen(
@@ -209,11 +212,16 @@ private fun SectionTitle(
     }
 }
 
+@SuppressLint("DiscouragedApi", "LocalContextResourcesRead")
 @Composable
 private fun ProductoCardHome(
     producto: ProductosEntity,
     onAdd: () -> Unit
 ) {
+    val context = LocalContext.current
+    val imagenes = remember(producto.imagenUrl) {
+        context.resources.getIdentifier(producto.imagenUrl, "drawable", context.packageName)
+    }
     ElevatedCard(
         modifier = Modifier
             .width(240.dp)
@@ -230,7 +238,7 @@ private fun ProductoCardHome(
             ) {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(producto.imagenUrl ?: "")
+                        .data(if(imagenes != 0) {imagenes} else { R.drawable.placeholder })
                         .crossfade(true)
                         .build(),
                     contentDescription = producto.nombre
@@ -296,7 +304,7 @@ private fun HappyHourBanner() {
                 val m = diffMinutes % 60
                 String.format("%02dh %02dm restantes", h, m)
             } else {
-                "Finalizó 🎉"
+                "Happy Hour Finalizada"
             }
 
             kotlinx.coroutines.delay(60_000)
@@ -330,7 +338,7 @@ private fun HappyHourBanner() {
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                "⏰ $remaining",
+                "⏰ $remaining ⏰",
                 color = Color.White,
                 fontWeight = FontWeight.SemiBold
             )

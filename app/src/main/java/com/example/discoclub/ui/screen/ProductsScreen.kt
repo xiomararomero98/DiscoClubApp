@@ -1,5 +1,8 @@
 package com.example.discoclub.ui.screen
 
+import android.R.color.white
+import android.annotation.SuppressLint
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -8,6 +11,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.discoclub.data.local.productos.ProductosEntity
@@ -104,13 +111,42 @@ fun ProductsScreen(
     }
 }
 
+@SuppressLint("DiscouragedApi", "LocalContextResourcesRead")
 @Composable
 private fun ProductoCard(
     producto: ProductosEntity,
     onAddToCart: (ProductosEntity) -> Unit
 ) {
+    val context = LocalContext.current
+    val imagenesId = remember(producto.imagenUrl) {
+        producto.imagenUrl?.let {
+            context.resources.getIdentifier(it, "drawable", context.packageName)
+        } ?: 0
+    }
     ElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
+            if (imagenesId != 0) {
+                Image(
+                    painter = painterResource(id = imagenesId),
+                    contentDescription = producto.nombre,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(180.dp),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(180.dp)
+                        .background(Color.Gray),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("Sin imagen", color = Color.White)
+                }
+            }
+            Spacer(Modifier.height(8.dp))
+
             Text(
                 producto.nombre,
                 style = MaterialTheme.typography.titleMedium,

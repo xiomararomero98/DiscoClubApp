@@ -95,21 +95,21 @@ abstract class AppDatabase : RoomDatabase() {
                                                 descripcion = "Trago tradicional chileno 350ml",
                                                 precio = 4500L,
                                                 stock = 20,
-                                                imagenUrl = null
+                                                imagenUrl = "piscosour"
                                             ),
                                             ProductosEntity(
                                                 nombre = "Bebida Energética",
                                                 descripcion = "Lata 250ml",
                                                 precio = 2500L,
                                                 stock = 40,
-                                                imagenUrl = null
+                                                imagenUrl = "energetica"
                                             ),
                                             ProductosEntity(
                                                 nombre = "Vodka + Energética",
                                                 descripcion = "Combinado clásico 500ml",
                                                 precio = 5500L,
                                                 stock = 15,
-                                                imagenUrl = null
+                                                imagenUrl = "vodkaenergetica"
                                             )
                                         )
                                         productosSeed.forEach { productosDao.upsert(it) }
