@@ -86,7 +86,7 @@ fun AdminScreen(
             // ----------------- Contenido dinámico -----------------
             // Cambia automáticamente según la pestaña activa
             when (selectedTabIndex) {
-                0 -> AdminInventarioScreen()                       // Pestaña Inventario
+                0 -> AdminInventarioScreen(vm = vm)                       // Pestaña Inventario
                 1 -> AdminPerfilesScreen(vm = vm, navController)   // Pestaña Perfiles (usa el ViewModel)
                 2 -> AdminRegistrosScreen()                        // Pestaña Registros
             }
@@ -97,7 +97,7 @@ fun AdminScreen(
 // INVENTARIO (CRUD DE PRODUCTOS)
 
 @Composable
-fun AdminInventarioScreen() {
+fun AdminInventarioScreen(vm: AuthViewModel) {
     // Campos del formulario
     var nombre by remember { mutableStateOf("") }            // Campo: nombre del producto
     var descripcion by remember { mutableStateOf("") }       // Campo: descripción del producto
@@ -105,19 +105,14 @@ fun AdminInventarioScreen() {
     var stock by remember { mutableStateOf("") }             // Campo: cantidad en stock
     var imagen by remember { mutableStateOf("") }            // Campo: URL de imagen del producto
 
-    // Lista que almacena los productos creados
+    val state by vm.register.collectAsStateWithLifecycle()
     var productos by remember { mutableStateOf(listOf<String>()) }
 
-    // Controla si el formulario se muestra o no
-    var mostrarFormulario by remember { mutableStateOf(true) }
-
-    // Contenedor principal de la subpantalla
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // Título principal
         Text(
             "Gestión de Inventario",
             style = MaterialTheme.typography.titleLarge,
@@ -128,26 +123,18 @@ fun AdminInventarioScreen() {
         Spacer(modifier = Modifier.height(8.dp))
         Text("Inventario actual:", fontWeight = FontWeight.SemiBold)
 
-        // Si la lista está vacía, muestra mensaje
         if (productos.isEmpty()) {
             Text("No hay productos registrados aún.", color = Color.Gray)
         } else {
-            // Si hay productos, los muestra en una lista desplazable
             LazyColumn(modifier = Modifier.padding(top = 8.dp)) {
                 items(productos) { producto ->
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween // Espaciado entre texto e ícono
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("• $producto") // Muestra nombre y precio del producto
-                        IconButton(onClick = {
-                            productos = productos - producto // Elimina el producto de la lista
-                        }) {
-                            Icon(
-                                Icons.Filled.Delete,
-                                contentDescription = "Eliminar",
-                                tint = Color.Red // Color rojo para eliminar
-                            )
+                        Text("• $producto")
+                        IconButton(onClick = { productos = productos - producto }) {
+                            Icon(Icons.Filled.Delete, contentDescription = "Eliminar", tint = Color.Red)
                         }
                     }
                 }
@@ -156,78 +143,86 @@ fun AdminInventarioScreen() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Formulario animado (puede ocultarse o mostrarse)
-        AnimatedVisibility(visible = mostrarFormulario) {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Agregar Producto", fontWeight = FontWeight.Bold)
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text("Agregar Producto", fontWeight = FontWeight.Bold)
 
-                    // Campo Nombre
-                    OutlinedTextField(
-                        value = nombre,
-                        onValueChange = { nombre = it },
-                        label = { Text("Nombre") },
-                        modifier = Modifier.fillMaxWidth()
+                OutlinedTextField(
+                    value = nombre,
+                    onValueChange = { nombre = it },
+                    label = { Text("Nombre *") },
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = nombre.isBlank() && state.error != null
+                )
+
+                OutlinedTextField(
+                    value = descripcion,
+                    onValueChange = { descripcion = it },
+                    label = { Text("Descripción *") },
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = descripcion.isBlank() && state.error != null
+                )
+
+                OutlinedTextField(
+                    value = precio,
+                    onValueChange = { precio = it },
+                    label = { Text("Precio (CLP) *") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = precio.isBlank() && state.error != null
+                )
+
+                OutlinedTextField(
+                    value = stock,
+                    onValueChange = { stock = it },
+                    label = { Text("Stock *") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = stock.isBlank() && state.error != null
+                )
+
+                OutlinedTextField(
+                    value = imagen,
+                    onValueChange = { imagen = it },
+                    label = { Text("Imagen (URL) *") },
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = imagen.isBlank() && state.error != null
+                )
+
+                if (state.error != null) {
+                    Text(
+                        text = state.error ?: "",
+                        color = Color.Red,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(top = 6.dp)
                     )
+                }
 
-                    // Campo Descripción
-                    OutlinedTextField(
-                        value = descripcion,
-                        onValueChange = { descripcion = it },
-                        label = { Text("Descripción (opcional)") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                Spacer(modifier = Modifier.height(8.dp))
 
-                    // Campo Precio
-                    OutlinedTextField(
-                        value = precio,
-                        onValueChange = { precio = it },
-                        label = { Text("Precio (CLP)") },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    // Campo Stock
-                    OutlinedTextField(
-                        value = stock,
-                        onValueChange = { stock = it },
-                        label = { Text("Stock") },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    // Campo Imagen
-                    OutlinedTextField(
-                        value = imagen,
-                        onValueChange = { imagen = it },
-                        label = { Text("Imagen (URL opcional)") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Botón Guardar producto
-                    Button(
-                        onClick = {
-                            // Validación: nombre y precio no pueden estar vacíos
-                            if (nombre.isNotBlank() && precio.isNotBlank()) {
-                                // Agrega el producto a la lista
-                                productos = productos + "$nombre - $$precio"
-                                // Limpia los campos del formulario
-                                nombre = ""
-                                descripcion = ""
-                                precio = ""
-                                stock = ""
-                                imagen = ""
-                            }
-                        },
-                        modifier = Modifier.align(Alignment.End)
-                    ) {
-                        Text("Guardar")
-                    }
+                Button(
+                    onClick = {
+                        if (nombre.isBlank() || descripcion.isBlank() ||
+                            precio.isBlank() || stock.isBlank() || imagen.isBlank()
+                        ) {
+                            vm.setError("Todos los campos son obligatorios")
+                        } else {
+                            productos = productos + "$nombre - $$precio"
+                            vm.setError(null)
+                            nombre = ""
+                            descripcion = ""
+                            precio = ""
+                            stock = ""
+                            imagen = ""
+                        }
+                    },
+                    modifier = Modifier.align(Alignment.End),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6A1B9A))
+                ) {
+                    Text("Guardar")
                 }
             }
         }

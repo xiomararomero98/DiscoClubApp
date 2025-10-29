@@ -42,7 +42,8 @@ data class RegisterUiState(
     val isSubmitting: Boolean = false,                     // Flag de carga
     val canSubmit: Boolean = false,                        // Habilitar botón
     val success: Boolean = false,                          // Resultado OK
-    val errorMsg: String? = null                           // Error global (ej: duplicado)
+    val errorMsg: String? = null,                           // Error global (ej: duplicado)
+    val error: String? = null
 
 )
 // ----------------- COLECCIÓN EN MEMORIA (solo para la demo) -----------------
@@ -171,6 +172,10 @@ class AuthViewModel (
     fun clearRegisterResult() {                             // Limpia banderas tras navegar
         _register.update { it.copy(success = false, errorMsg = null) }
     }
+    fun setError(message: String?) {
+        _register.update { it.copy(error = message) }
+    }
+
 
     // ---------------------------------------------------------
     //  PERFIL DE USUARIO
