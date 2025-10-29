@@ -33,7 +33,7 @@ import kotlinx.coroutines.launch
         CarritoEntity::class,
         PedidoEntity::class
     ],
-    version = 2, // Incrementar versión cuando cambien entidades
+    version = 3, // Incrementar versión cuando cambien entidades
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {

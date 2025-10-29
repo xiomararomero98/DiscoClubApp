@@ -8,7 +8,7 @@ class PedidosViewModelFactory(private val repository: PedidoRepository): ViewMod
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(PedidosViewModel::class.java)){
-            return super.create(modelClass) as T
+            return PedidosViewModel(repository) as T
         }
         throw IllegalArgumentException("Uknown ViewModel Class: ${modelClass.name}")
     }

@@ -28,9 +28,8 @@ import androidx.compose.animation.slideInVertically             // Permite una a
 import androidx.compose.animation.slideOutVertically            // Permite una animación de deslizamiento hacia abajo
 import androidx.compose.foundation.shape.RoundedCornerShape     // Permite aplicar esquinas redondeadas
 import androidx.compose.ui.unit.sp                              // Permite cambiar el tamaño de la fuente
-
-
-
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 
 // ------------------------------------------------------------
@@ -105,6 +104,9 @@ fun AdminInventarioScreen() {
     var precio by remember { mutableStateOf("") }            // Campo: precio del producto
     var stock by remember { mutableStateOf("") }             // Campo: cantidad en stock
     var imagen by remember { mutableStateOf("") }            // Campo: URL de imagen del producto
+
+    val vm: AuthViewModel = viewModel()
+    val state by vm.register.collectAsStateWithLifecycle()
 
     // Lista que almacena los productos creados
     var productos by remember { mutableStateOf(listOf<String>()) }
