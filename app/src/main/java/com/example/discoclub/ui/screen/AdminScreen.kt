@@ -104,7 +104,7 @@ fun AdminInventarioScreen() {
     var precio by remember { mutableStateOf("") }            // Campo: precio del producto
     var stock by remember { mutableStateOf("") }             // Campo: cantidad en stock
     var imagen by remember { mutableStateOf("") }            // Campo: URL de imagen del producto
-    
+
     // Lista que almacena los productos creados
     var productos by remember { mutableStateOf(listOf<String>()) }
 
