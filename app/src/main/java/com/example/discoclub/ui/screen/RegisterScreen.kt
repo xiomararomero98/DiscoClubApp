@@ -27,7 +27,7 @@ fun RegisterScreenVm(
     onRegisteredNavigateLogin: () -> Unit,                   // Navega a Login si success=true
     onGoLogin: () -> Unit                                    // Botón alternativo para ir a Login
 ) {
-    
+
     val state by vm.register.collectAsStateWithLifecycle()   // Observa estado en tiempo real
     val context = LocalContext.current                       // Esto hace que el Toast funcione
 
