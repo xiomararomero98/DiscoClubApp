@@ -1,5 +1,6 @@
 package com.example.discoclub.ui.screen
 
+import android.widget.Toast
 import androidx.compose.foundation.background                 // Fondo
 import androidx.compose.foundation.layout.*                   // Box/Column/Row/Spacer
 import androidx.compose.foundation.text.KeyboardOptions
@@ -10,11 +11,14 @@ import androidx.compose.material3.*                           // Material 3
 import androidx.compose.runtime.*                             // remember, Composable
 import androidx.compose.ui.Alignment                          // Alineaciones
 import androidx.compose.ui.Modifier                           // Modificador
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.*                       // KeyboardOptions/Types/Transformations
 import androidx.compose.ui.unit.dp                            // DPs
 import androidx.lifecycle.compose.collectAsStateWithLifecycle // Observa StateFlow
 import androidx.lifecycle.viewmodel.compose.viewModel         // Obtiene VM
 import com.example.discoclub.ui.viewmodel.AuthViewModel         // ViewModel
+import kotlinx.coroutines.delay
+
 
 //1 creamos la union con el viewmodel creado
 @Composable                                                  // Pantalla Registro conectada al VM
@@ -23,12 +27,18 @@ fun RegisterScreenVm(
     onRegisteredNavigateLogin: () -> Unit,                   // Navega a Login si success=true
     onGoLogin: () -> Unit                                    // Botón alternativo para ir a Login
 ) {
-
+    
     val state by vm.register.collectAsStateWithLifecycle()   // Observa estado en tiempo real
+    val context = LocalContext.current                       // Esto hace que el Toast funcione
 
-    if (state.success) {                                     // Si registro fue exitoso
-        vm.clearRegisterResult()                             // Limpia banderas
-        onRegisteredNavigateLogin()                          // Navega a Login
+    LaunchedEffect(state.success) {
+        if (state.success) {                                     // Si registro fue exitoso
+            Toast.makeText(context, "¡Bienvenido ${state.name}!", Toast.LENGTH_SHORT)
+                .show() //con esto muestra el mensaje del que se registro
+            delay(800)
+            vm.clearRegisterResult()                             // Limpia banderas
+            onRegisteredNavigateLogin()                          // Navega a Login
+        }
     }
 
     RegisterScreen(                                          // Delegamos UI presentacional
