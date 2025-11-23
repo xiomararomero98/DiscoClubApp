@@ -156,6 +156,7 @@ fun AdminInventarioScreen(vm: AuthViewModel) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text("Agregar Producto", fontWeight = FontWeight.Bold)
 
+                // acá va la validación del nombre
                 OutlinedTextField(
                     value = nombre,
                     onValueChange = { value ->
@@ -178,13 +179,20 @@ fun AdminInventarioScreen(vm: AuthViewModel) {
                         style = MaterialTheme.typography.labelSmall
                     )
                 }
-
+                // aca va la validaciónn de la descripción
                 OutlinedTextField(
                     value = descripcion,
-                    onValueChange = { descripcion = it
-                                    descripcionError = null //limpia el mensaje error
-                                    mensajeGeneral = null //limpia el mensaje general
-                                    },
+                    onValueChange = { value ->
+                        //actualizo el texto
+                        descripcion = value
+                        mensajeGeneral = null //limpia el mensaje general
+                        // valido: solo que no esté vacía (y opcionalmente largo mínimo)
+                        descripcionError = when {
+                            value.isBlank() -> "La descripción es obligatoria"
+                            value.length < 5 -> "Debe tener al menos 5 caracteres" // si no quieres esto, bórralo
+                            else -> null
+                        }
+                    },
                     label = { Text("Descripción *") },
                     modifier = Modifier.fillMaxWidth(),
                     isError = descripcionError != null
