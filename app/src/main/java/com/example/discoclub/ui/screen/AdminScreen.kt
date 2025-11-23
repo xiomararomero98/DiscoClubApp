@@ -28,8 +28,7 @@ import androidx.compose.animation.slideInVertically             // Permite una a
 import androidx.compose.animation.slideOutVertically            // Permite una animación de deslizamiento hacia abajo
 import androidx.compose.foundation.shape.RoundedCornerShape     // Permite aplicar esquinas redondeadas
 import androidx.compose.ui.unit.sp                              // Permite cambiar el tamaño de la fuente
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.discoclub.domain.validation.validateNameLettersOnly
 
 
 // ------------------------------------------------------------
@@ -159,10 +158,15 @@ fun AdminInventarioScreen(vm: AuthViewModel) {
 
                 OutlinedTextField(
                     value = nombre,
-                    onValueChange = { nombre = it
-                                    nombreError = null //limpia el mensaje error
-                                    mensajeGeneral = null //limpia el mensaje general
-                                    },
+                    onValueChange = { value ->
+                        //actualizo el texto
+                        nombre = value
+                        mensajeGeneral = null// cada ves que escribo revisa si esta bien o no
+                        nombreError = when {
+                            value.length < 3 -> "Debe tener al menos 3 caracteres"
+                            else -> validateNameLettersOnly(value)
+                        }
+                    },
                     label = { Text("Nombre *") },
                     modifier = Modifier.fillMaxWidth(),
                     isError = nombreError != null
