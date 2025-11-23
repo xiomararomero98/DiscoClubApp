@@ -105,7 +105,14 @@ fun AdminInventarioScreen(vm: AuthViewModel) {
     var stock by remember { mutableStateOf("") }             // Campo: cantidad en stock
     var imagen by remember { mutableStateOf("") }            // Campo: URL de imagen del producto
 
-    val state by vm.register.collectAsStateWithLifecycle()
+    // acá van los estados de error
+    var nombreError by remember { mutableStateOf<String?>(null) }
+    var descripcionError by remember { mutableStateOf<String?>(null) }
+    var precioError by remember { mutableStateOf<String?>(null) }
+    var stockError by remember { mutableStateOf<String?>(null) }
+    var imagenError by remember { mutableStateOf<String?>(null) }
+    var mensajeGeneral by remember { mutableStateOf<String?>(null) }
+    
     var productos by remember { mutableStateOf(listOf<String>()) }
 
     Column(
@@ -152,66 +159,183 @@ fun AdminInventarioScreen(vm: AuthViewModel) {
 
                 OutlinedTextField(
                     value = nombre,
-                    onValueChange = { nombre = it },
+                    onValueChange = { nombre = it
+                                    nombreError = null //limpia el mensaje error
+                                    mensajeGeneral = null //limpia el mensaje general
+                                    },
                     label = { Text("Nombre *") },
                     modifier = Modifier.fillMaxWidth(),
-                    isError = nombre.isBlank() && state.error != null
+                    isError = nombreError != null
                 )
+                if (nombreError != null) {
+                    Text(
+                        nombreError!!,
+                        color = Color.Red,
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                }
 
                 OutlinedTextField(
                     value = descripcion,
-                    onValueChange = { descripcion = it },
+                    onValueChange = { descripcion = it
+                                    descripcionError = null //limpia el mensaje error
+                                    mensajeGeneral = null //limpia el mensaje general
+                                    },
                     label = { Text("Descripción *") },
                     modifier = Modifier.fillMaxWidth(),
-                    isError = descripcion.isBlank() && state.error != null
+                    isError = descripcionError != null
                 )
+                if (descripcionError != null) {
+                    Text(
+                        descripcionError!!,
+                        color = Color.Red,
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                }
 
                 OutlinedTextField(
                     value = precio,
-                    onValueChange = { precio = it },
+                    onValueChange = { precio = it
+                                    precioError = null //limpia el mensaje error
+                                    mensajeGeneral = null //limpia el mensaje general
+                                    },
                     label = { Text("Precio (CLP) *") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth(),
-                    isError = precio.isBlank() && state.error != null
+                    isError = precioError != null
                 )
+                if (precioError != null) {
+                    Text(
+                        precioError!!,
+                        color = Color.Red,
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                }
 
                 OutlinedTextField(
                     value = stock,
-                    onValueChange = { stock = it },
+                    onValueChange = { stock = it
+                                    stockError = null //limpia el mensaje error
+                                    mensajeGeneral = null //limpia el mensaje general
+                                    },
                     label = { Text("Stock *") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth(),
-                    isError = stock.isBlank() && state.error != null
+                    isError = stockError != null
                 )
+                if (stockError != null) {
+                    Text(
+                        stockError!!,
+                        color = Color.Red,
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                }
+
 
                 OutlinedTextField(
                     value = imagen,
-                    onValueChange = { imagen = it },
+                    onValueChange = { imagen = it
+                                    imagenError = null //limpia el mensaje error
+                                    mensajeGeneral = null //limpia el mensaje general
+                                    },
                     label = { Text("Imagen (URL) *") },
                     modifier = Modifier.fillMaxWidth(),
-                    isError = imagen.isBlank() && state.error != null
+                    isError = imagenError != null
                 )
 
-                if (state.error != null) {
+                if (imagenError != null) {
                     Text(
-                        text = state.error ?: "",
+                        imagenError!!,
                         color = Color.Red,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(top = 6.dp)
+                        style = MaterialTheme.typography.labelSmall
                     )
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
+                // Mensaje general de error
+                if (mensajeGeneral != null) {
+                    Text(
+                        mensajeGeneral!!,
+                        color = Color.Red,
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
 
                 Button(
                     onClick = {
-                        if (nombre.isBlank() || descripcion.isBlank() ||
-                            precio.isBlank() || stock.isBlank() || imagen.isBlank()
-                        ) {
-                            vm.setError("Todos los campos son obligatorios")
+                        // limpiar errores anteriores
+                        nombreError = null
+                        descripcionError = null
+                        precioError = null
+                        stockError = null
+                        imagenError = null
+                        mensajeGeneral = null
+
+                        var hayError = false
+
+                        // --- validación nombre ---
+                        if (nombre.isBlank()) {
+                            nombreError = "El nombre es obligatorio"
+                            hayError = true
+                        }
+
+                        // --- validación descripción ---
+                        if (descripcion.isBlank()) {
+                            descripcionError = "La descripción es obligatoria"
+                            hayError = true
+                        }
+
+                        // --- validación precio ---
+                        if (precio.isBlank()) {
+                            precioError = "El precio es obligatorio"
+                            hayError = true
                         } else {
+                            val valor = precio.toIntOrNull()
+                            if (valor == null) {
+                                precioError = "El precio debe ser numérico"
+                                hayError = true
+                            } else if (valor <= 0) {
+                                precioError = "El precio debe ser mayor a 0"
+                                hayError = true
+                            } else if (valor > 1_000_000) {
+                                precioError = "El precio no puede superar 1.000.000"
+                                hayError = true
+                            }
+                        }
+
+                        // --- validación stock ---
+                        if (stock.isBlank()) {
+                            stockError = "El stock es obligatorio"
+                            hayError = true
+                        } else {
+                            val cantidad = stock.toIntOrNull()
+                            if (cantidad == null) {
+                                stockError = "El stock debe ser numérico"
+                                hayError = true
+                            } else if (cantidad < 0) {
+                                stockError = "El stock no puede ser negativo"
+                                hayError = true
+                            }
+                        }
+
+                        // --- validación imagen ---
+                        if (imagen.isBlank()) {
+                            imagenError = "La URL de la imagen es obligatoria"
+                            hayError = true
+                        } else if (!imagen.startsWith("http")) {
+                            imagenError = "La URL debe comenzar con http o https"
+                            hayError = true
+                        }
+
+                        // --- si hubo errores, no guardo ---
+                        if (hayError) {
+                            mensajeGeneral = "Revisa los campos marcados en rojo"
+                        } else {
+                            // si todo está bien, agrego el producto
                             productos = productos + "$nombre - $$precio"
-                            vm.setError(null)
+
+                            // limpio los campos
                             nombre = ""
                             descripcion = ""
                             precio = ""
