@@ -112,7 +112,7 @@ fun AdminInventarioScreen(vm: AuthViewModel) {
     var stockError by remember { mutableStateOf<String?>(null) }
     var imagenError by remember { mutableStateOf<String?>(null) }
     var mensajeGeneral by remember { mutableStateOf<String?>(null) }
-    
+
     var productos by remember { mutableStateOf(listOf<String>()) }
 
     Column(
