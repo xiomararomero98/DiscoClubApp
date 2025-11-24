@@ -255,13 +255,45 @@ fun AdminInventarioScreen(vm: AuthViewModel) {
                         style = MaterialTheme.typography.labelSmall
                     )
                 }
-
+                //validacion del stock
                 OutlinedTextField(
                     value = stock,
-                    onValueChange = { stock = it
-                                    stockError = null //limpia el mensaje error
-                                    mensajeGeneral = null //limpia el mensaje general
-                                    },
+                    onValueChange = { value ->
+                        // dejo solo números y un punto
+                        val filtrado = value.filter { it.isDigit() || it == '.' }
+
+                        stock = filtrado
+                        mensajeGeneral = null
+
+                        val soloDigitos = filtrado.filter { it.isDigit() }
+
+                        stockError = when {
+                            filtrado.isBlank() ->
+                                "El stock es obligatorio"
+
+                            // más de un punto
+                            filtrado.count { it == '.' } > 1 ->
+                                "Solo se permite un punto"
+
+                            // empieza con punto
+                            filtrado.startsWith('.') ->
+                                "No puede comenzar con punto"
+
+                            // convertido a número falla
+                            filtrado.toDoubleOrNull() == null ->
+                                "El stock debe ser numérico"
+
+                            // más de 4 dígitos
+                            soloDigitos.length > 4 ->
+                                "Máximo 4 dígitos para el stock"
+
+                            // si hay más de 3 dígitos y no tiene punto → pedimos el punto
+                            soloDigitos.length > 3 && !filtrado.contains('.') ->
+                                "Si es mayor a 999 usa un punto, ej: 1.000"
+
+                            else -> null
+                        }
+                    },
                     label = { Text("Stock *") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth(),
@@ -275,7 +307,7 @@ fun AdminInventarioScreen(vm: AuthViewModel) {
                     )
                 }
 
-
+                //validacion de imagen
                 OutlinedTextField(
                     value = imagen,
                     onValueChange = { imagen = it
@@ -343,15 +375,8 @@ fun AdminInventarioScreen(vm: AuthViewModel) {
                         if (stock.isBlank()) {
                             stockError = "El stock es obligatorio"
                             hayError = true
-                        } else {
-                            val cantidad = stock.toIntOrNull()
-                            if (cantidad == null) {
-                                stockError = "El stock debe ser numérico"
-                                hayError = true
-                            } else if (cantidad < 0) {
-                                stockError = "El stock no puede ser negativo"
-                                hayError = true
-                            }
+                        } else if (stockError != null){
+                            hayError = true
                         }
 
                         // --- validación imagen ---
