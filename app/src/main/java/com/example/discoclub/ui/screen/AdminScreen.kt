@@ -204,13 +204,45 @@ fun AdminInventarioScreen(vm: AuthViewModel) {
                         style = MaterialTheme.typography.labelSmall
                     )
                 }
-
+                // aca va la validación del precio
                 OutlinedTextField(
                     value = precio,
-                    onValueChange = { precio = it
-                                    precioError = null //limpia el mensaje error
-                                    mensajeGeneral = null //limpia el mensaje general
-                                    },
+                    onValueChange = { value ->
+                        // dejo solo números y un punto
+                        val filtrado = value.filter { it.isDigit() || it == '.' }
+
+                        precio = filtrado
+                        mensajeGeneral = null //limpia el mensaje general
+                        precioError = when {
+                            // aquí detecto que el usuario intentó escribir algo que no es número ni punto
+                            value != filtrado ->
+                                "Solo se permiten números y un punto"
+
+                            filtrado.isBlank() -> "El precio es obligatorio"
+                            // condicion para el punto decimal
+                            filtrado.count { it == '.' } == 0 ->
+                                "El precio debe incluir un punto decimal"
+
+                            // más de un punto
+                            filtrado.count { it == '.' } > 1 ->
+                                "Solo se permite un punto decimal"
+
+                            // empieza con punto
+                            filtrado.startsWith('.') ->
+                                "No puede comenzar con punto"
+
+                            // no se puede convertir a número
+                            filtrado.toDoubleOrNull() == null ->
+                                "El precio debe ser numérico"
+
+                            filtrado.toDouble() <= 0.0 ->
+                                "El precio debe ser mayor a 0"
+
+                            filtrado.toDouble() > 1_000_000 ->
+                                "El precio no puede superar 1.000.000"
+                            else -> null
+                        }
+                    },
                     label = { Text("Precio (CLP) *") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth(),
@@ -302,18 +334,9 @@ fun AdminInventarioScreen(vm: AuthViewModel) {
                         if (precio.isBlank()) {
                             precioError = "El precio es obligatorio"
                             hayError = true
-                        } else {
-                            val valor = precio.toIntOrNull()
-                            if (valor == null) {
-                                precioError = "El precio debe ser numérico"
-                                hayError = true
-                            } else if (valor <= 0) {
-                                precioError = "El precio debe ser mayor a 0"
-                                hayError = true
-                            } else if (valor > 1_000_000) {
-                                precioError = "El precio no puede superar 1.000.000"
-                                hayError = true
-                            }
+                        } else if (precioError != null) {
+                            hayError = true
+
                         }
 
                         // --- validación stock ---
